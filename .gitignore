@@ -36,3 +36,9 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Prevent pnpm lockfiles in individual services (monorepo should only have one at root)
+/services/**/pnpm-lock.yaml
+/packages/**/pnpm-lock.yaml
+/services/**/pnpm-workspace.yaml
+/packages/**/pnpm-workspace.yaml
