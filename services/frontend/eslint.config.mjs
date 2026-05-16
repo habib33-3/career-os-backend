@@ -1,12 +1,12 @@
 import js from "@eslint/js";
 import nextPlugin from "@next/eslint-plugin-next";
 import prettier from "eslint-config-prettier";
+import tailwindPlugin from "eslint-plugin-better-tailwindcss";
 import importPlugin from "eslint-plugin-import";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import perfectionist from "eslint-plugin-perfectionist";
 import reactHooks from "eslint-plugin-react-hooks";
 import sonarjs from "eslint-plugin-sonarjs";
-import tailwindPlugin from "eslint-plugin-better-tailwindcss";
 import unicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -142,20 +142,20 @@ export default tseslint.config(
       // --------------------------------------------------
       // Perfectionist (imports sorting)
       // --------------------------------------------------
-   "perfectionist/sort-imports": [
-  "warn",
-  {
-    type: "natural",
-    order: "asc",
-    groups: [
-      "builtin",
-      "external",
-      "internal",
-      ["parent", "sibling", "index"],
-      "type",
-    ],
-  },
-],
+      "perfectionist/sort-imports": [
+        "warn",
+        {
+          type: "natural",
+          order: "asc",
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            ["parent", "sibling", "index"],
+            "type",
+          ],
+        },
+      ],
 
       // --------------------------------------------------
       // General JS best practices
@@ -173,5 +173,5 @@ export default tseslint.config(
   // --------------------------------------------------
   // Prettier (must be last)
   // --------------------------------------------------
-  prettier,
+  prettier
 );

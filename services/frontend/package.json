@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "next dev",
+    "lint": "eslint",
+    "start": "next start"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -24,6 +24,7 @@
     "@eslint/js": "^9.39.4",
     "@next/eslint-plugin-next": "^16.2.6",
     "@tailwindcss/postcss": "^4",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -39,6 +40,9 @@
     "eslint-plugin-sonarjs": "^4.0.3",
     "eslint-plugin-unicorn": "^64.0.0",
     "globals": "^17.6.0",
+    "prettier": "^3.7.4",
+    "prettier-plugin-packagejson": "^3.0.2",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "typescript-eslint": "^8.59.3"
