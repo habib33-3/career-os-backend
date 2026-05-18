@@ -60,9 +60,7 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new UnauthorizedException(
-                "User not found with email: " + email
-            );
+            throw new UnauthorizedException("Wrong credentials");
         }
 
         return user;
