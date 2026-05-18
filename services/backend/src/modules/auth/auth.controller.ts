@@ -1,43 +1,62 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    Patch,
-    Post,
-} from "@nestjs/common";
+import { Body, Controller, Post, Res } from "@nestjs/common";
+import { ApiOperation } from "@nestjs/swagger";
+
+import type { Response } from "express";
+
+import { Public } from "@/common/decorators/auth/public.decorator";
+import { env } from "@/common/env/env";
 
 import { AuthService } from "./auth.service";
-import { CreateAuthDto } from "./dto/create-auth.dto";
-import { UpdateAuthDto } from "./dto/update-auth.dto";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "./constants/auth.constants";
+import { LoginDto } from "./dto/login.dto";
+import { RegisterDto } from "./dto/register.dto";
 
 @Controller("auth")
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
-    @Post()
-    create(@Body() createAuthDto: CreateAuthDto) {
-        return this.authService.create(createAuthDto);
+    private setAuthCookies(
+        res: Response,
+        tokens: { accessToken: string; refreshToken: string }
+    ) {
+        const isProd = env.NODE_ENV === "production";
+
+        const cookieOptions = {
+            httpOnly: true,
+            secure: isProd,
+            sameSite: isProd ? "none" : "lax",
+            path: "/",
+        } as const;
+
+        res.cookie(ACCESS_TOKEN, tokens.accessToken, {
+            ...cookieOptions,
+            maxAge: env.ACCESS_TOKEN_EXPIRES,
+        });
+
+        res.cookie(REFRESH_TOKEN, tokens.refreshToken, {
+            ...cookieOptions,
+            maxAge: env.REFRESH_TOKEN_EXPIRES,
+        });
     }
 
-    @Get()
-    findAll() {
-        return this.authService.findAll();
+    @Public()
+    @Post("register")
+    @ApiOperation({ summary: "Register a new user", security: [] })
+    async register(@Body() payload: RegisterDto) {
+        return this.authService.register(payload);
     }
 
-    @Get(":id")
-    findOne(@Param("id") id: string) {
-        return this.authService.findOne(+id);
-    }
+    @Public()
+    @Post("login")
+    @ApiOperation({ summary: "Login a user", security: [] })
+    async login(
+        @Body() payload: LoginDto,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        const result = await this.authService.login(payload);
 
-    @Patch(":id")
-    update(@Param("id") id: string, @Body() updateAuthDto: UpdateAuthDto) {
-        return this.authService.update(+id, updateAuthDto);
-    }
+        this.setAuthCookies(res, result.token);
 
-    @Delete(":id")
-    remove(@Param("id") id: string) {
-        return this.authService.remove(+id);
+        return result;
     }
 }

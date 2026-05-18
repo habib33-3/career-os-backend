@@ -559,7 +559,10 @@ export const UserScalarFieldEnum = {
     id: "id",
     email: "email",
     name: "name",
+    role: "role",
+    password: "password",
     createdAt: "createdAt",
+    updatedAt: "updatedAt",
 } as const;
 
 export type UserScalarFieldEnum =
@@ -604,6 +607,22 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<
     $PrismaModel,
     "String[]"
+>;
+
+/**
+ * Reference to a field of type 'UserRole'
+ */
+export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<
+    $PrismaModel,
+    "UserRole"
+>;
+
+/**
+ * Reference to a field of type 'UserRole[]'
+ */
+export type ListEnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<
+    $PrismaModel,
+    "UserRole[]"
 >;
 
 /**
