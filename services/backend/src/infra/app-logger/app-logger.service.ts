@@ -59,6 +59,7 @@ const consoleFormat = printf(
 
         const levelLabel = lvlColor(level.toUpperCase());
 
+        // eslint-disable-next-line security/detect-object-injection
         const icon = LEVEL_ICONS[level] ?? "";
 
         const ctxLabel = LOG_COLORS.context(`[${context ?? "AppLogger"}]`);

@@ -20,6 +20,7 @@ export const CurrentUser = createParamDecorator(
             );
         }
 
+        // eslint-disable-next-line security/detect-object-injection
         return key ? user[key] : user;
     }
 );

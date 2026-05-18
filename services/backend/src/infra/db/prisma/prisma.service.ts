@@ -8,8 +8,9 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 import { env } from "@/common/env/env";
 
-import { PrismaClient } from "@/generated/prisma/client";
 import { AppLoggerService } from "@/infra/app-logger/app-logger.service";
+
+import { PrismaClient } from "@/generated/prisma/client";
 
 @Injectable()
 export class PrismaService

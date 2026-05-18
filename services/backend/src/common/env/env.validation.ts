@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 import "dotenv/config";
 
 import { envSchema } from "./env.schema";
 
+// eslint-disable-next-line n/prefer-global/process
 export const validateEnv = (env: NodeJS.ProcessEnv = process.env) => {
     const parsed = envSchema.safeParse(env);
 

@@ -71,6 +71,7 @@ async function bootstrap() {
 
     // Handle unhandled promise rejections
 
+    // eslint-disable-next-line n/prefer-global/process
     process.on("unhandledRejection", async (reason: unknown) => {
         logger.error(
             "Unhandled Promise Rejection",
@@ -95,6 +96,7 @@ async function bootstrap() {
 
     // Handle uncaught exceptions
 
+    // eslint-disable-next-line n/prefer-global/process
     process.on("uncaughtException", async (error: Error) => {
         logger.error("Uncaught Exception", error.stack, "Process");
 
@@ -115,5 +117,6 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
+    // eslint-disable-next-line no-console
     console.error("Bootstrap failed", error);
 });

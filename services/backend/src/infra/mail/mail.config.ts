@@ -12,6 +12,7 @@ export const mailConfig = (): MailerOptions => {
         },
         template: {
             adapter: new HandlebarsAdapter(),
+            // eslint-disable-next-line n/prefer-global/process
             dir: join(process.cwd(), "src/infra/mail/templates"),
             options: {
                 strict: true,
