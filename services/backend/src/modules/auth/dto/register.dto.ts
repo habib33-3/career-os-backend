@@ -25,7 +25,7 @@ export class RegisterDto {
     name: string;
 
     @ApiProperty({
-        example: "john@example.com",
+        example: "user@e.com",
         description: "Valid email address",
     })
     @IsEmail()
@@ -34,7 +34,7 @@ export class RegisterDto {
     email: string;
 
     @ApiProperty({
-        example: "StrongPass123!",
+        example: "12345678",
         description: "Password must contain at least 8 characters,",
         minLength: 8,
     })

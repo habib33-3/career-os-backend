@@ -60,14 +60,15 @@ async function bootstrap() {
     app.useGlobalFilters(new AllExceptionsFilter(logger));
     app.useGlobalInterceptors(new ResponseInterceptor());
 
-    // Swagger (only in non-production)
-    if (env.NODE_ENV !== "production") {
-        setupSwagger(app);
-    }
+    setupSwagger(app);
 
     await app.listen(env.PORT);
 
     logger.log(`Application started on port ${env.PORT} `, "Bootstrap");
+    logger.log(
+        `Swagger docs available at http://localhost:${env.PORT}/api/docs`,
+        "Bootstrap"
+    );
 
     // Handle unhandled promise rejections
 

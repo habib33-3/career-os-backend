@@ -1,8 +1,9 @@
-import { Body, Controller, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, Post, Res } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 
 import type { Response } from "express";
 
+import { CurrentUser } from "@/common/decorators/auth/current-user.decorator";
 import { Public } from "@/common/decorators/auth/public.decorator";
 import { env } from "@/common/env/env";
 
@@ -58,5 +59,11 @@ export class AuthController {
         this.setAuthCookies(res, result.token);
 
         return result;
+    }
+
+    @Get("me")
+    @ApiOperation({ summary: "Get current user info" })
+    async me(@CurrentUser("sub") userId: string) {
+        return this.authService.getMe(userId);
     }
 }
