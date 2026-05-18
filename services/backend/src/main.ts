@@ -40,7 +40,7 @@ async function bootstrap() {
     app.use(createMorganMiddleware(logger));
 
     app.setGlobalPrefix("api/v1", {
-        exclude: [{ method: RequestMethod.GET, path: "health/(.*)" }],
+        exclude: [{ path: "health", method: RequestMethod.GET }],
     });
 
     // Global Pipes
