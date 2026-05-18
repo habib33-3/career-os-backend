@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     Injectable,
+    NotFoundException,
     UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
@@ -59,7 +60,7 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new UnauthorizedException("User not found");
+            throw new UnauthorizedException("Wrong credentials");
         }
 
         return user;
@@ -140,6 +141,76 @@ export class AuthService {
                 accessToken,
                 refreshToken,
             },
+        };
+    }
+
+    async getCurrentUser(userId: string) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                createdAt: true,
+            },
+        });
+
+        if (!user) throw new NotFoundException("User not found");
+
+        return user;
+    }
+
+    async refreshToken(userId: string, refreshToken: string) {
+        const storedHash = await this.cache.get<string>(`refresh:${userId}`);
+
+        if (!storedHash) {
+            throw new UnauthorizedException("Invalid refresh token");
+        }
+
+        const isValid = await argon2.verify(storedHash, refreshToken);
+
+        if (!isValid) {
+            throw new UnauthorizedException("Invalid refresh token");
+        }
+
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+
+        if (!user) {
+            throw new UnauthorizedException("User not found");
+        }
+
+        const accessToken = this.generateToken(
+            {
+                sub: user.id,
+                email: user.email,
+                role: user.role,
+            },
+            "access"
+        );
+
+        const newRefreshToken = this.generateToken(
+            {
+                sub: user.id,
+            },
+            "refresh"
+        );
+
+        const hashed = await argon2.hash(newRefreshToken);
+
+        await this.cache.set(
+            `refresh:${user.id}`,
+            hashed,
+            env.REFRESH_TOKEN_EXPIRES
+        );
+
+        return {
+            accessToken,
+            refreshToken: newRefreshToken,
         };
     }
 }

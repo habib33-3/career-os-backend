@@ -1,8 +1,17 @@
-import { Body, Controller, Post, Res } from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Req,
+    Res,
+    UseGuards,
+} from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 
 import type { Response } from "express";
 
+import { CurrentUser } from "@/common/decorators/auth/current-user.decorator";
 import { Public } from "@/common/decorators/auth/public.decorator";
 import { env } from "@/common/env/env";
 
@@ -10,6 +19,7 @@ import { AuthService } from "./auth.service";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "./constants/auth.constants";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { RefreshTokenAuthGuard } from "./guard/refresh-token.guard";
 
 @Controller("auth")
 export class AuthController {
@@ -58,5 +68,28 @@ export class AuthController {
         this.setAuthCookies(res, result.token);
 
         return result;
+    }
+
+    @Get("me")
+    @ApiOperation({ summary: "Get current user info" })
+    async getCurrentUser(@CurrentUser("sub") userId: string) {
+        return this.authService.getCurrentUser(userId);
+    }
+
+    @UseGuards(RefreshTokenAuthGuard)
+    @Post("refresh")
+    async refresh(
+        @Req()
+        req: Request & {
+            user: {
+                sub: string;
+                refreshToken: string;
+            };
+        }
+    ) {
+        return this.authService.refreshToken(
+            req.user.sub,
+            req.user.refreshToken
+        );
     }
 }

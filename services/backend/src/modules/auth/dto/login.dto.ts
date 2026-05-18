@@ -6,7 +6,7 @@ import { TrimValue } from "@/common/decorators/validators.decorator";
 
 export class LoginDto {
     @ApiProperty({
-        example: "user@example.com",
+        example: "user@e.com",
         description: "User email address",
     })
     @TrimValue()
@@ -14,7 +14,7 @@ export class LoginDto {
     email: string;
 
     @ApiProperty({
-        example: "123456",
+        example: "12345678",
         description: "User password",
     })
     @IsString({ message: "Password must be a string" })
