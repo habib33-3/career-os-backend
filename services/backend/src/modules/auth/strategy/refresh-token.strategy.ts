@@ -27,20 +27,26 @@ export class RefreshTokenStrategy extends PassportStrategy(
         });
     }
 
-    async validate(req: Request, payload: { sub: string; type: string }) {
+    validate(
+        req: Request,
+        payload: {
+            sub: string;
+            type: string;
+        }
+    ) {
         if (payload.type !== "refresh") {
             throw new UnauthorizedException("Invalid token type");
         }
 
         // eslint-disable-next-line security/detect-object-injection
-        const refreshToken = req?.cookies?.[REFRESH_TOKEN];
+        const refreshToken = req.cookies?.[REFRESH_TOKEN];
 
         if (!refreshToken) {
             throw new UnauthorizedException("Refresh token missing");
         }
 
         return {
-            userId: payload.sub,
+            sub: payload.sub,
             refreshToken,
         };
     }
