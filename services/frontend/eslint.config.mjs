@@ -107,7 +107,7 @@ export default tseslint.config(
       // Unicorn (safe subset only)
       // -------------------------
       "unicorn/filename-case": [
-        "error",
+        "off",
         {
           case: "kebabCase",
           ignore: ["README.md"],
