@@ -24,13 +24,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html
       lang="en"
       className={cn("h-full antialiased", inter.variable, mono.variable)}
+      suppressHydrationWarning
     >
       <body className="min-h-full bg-background font-sans text-foreground">
         {children}
