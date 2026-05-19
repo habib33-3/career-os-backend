@@ -2,12 +2,12 @@ import js from "@eslint/js";
 import nextPlugin from "@next/eslint-plugin-next";
 import prettier from "eslint-config-prettier";
 import tailwindPlugin from "eslint-plugin-better-tailwindcss";
+import importPlugin from "eslint-plugin-import";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
 import unicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import importPlugin from "eslint-plugin-import";
 
 export default tseslint.config(
   // -------------------------

@@ -24,6 +24,9 @@ export default {
     "<THIRD_PARTY_MODULES>",
 
     "^@/components/(.*)$",
+    "^@/hooks/(.*)$",
+    "^@/lib/(.*)$",
+    "^@/providers/(.*)$",
     "^@/features/(.*)$",
     "^@/shared/(.*)$",
     "^@/(.*)$",

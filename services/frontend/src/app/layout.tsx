@@ -3,6 +3,8 @@ import { Geist_Mono, Inter } from "next/font/google";
 
 import { cn } from "@/lib/utils";
 
+import RootProvider from "@/providers/root-provider";
+
 import "./globals.css";
 
 const inter = Inter({
@@ -34,7 +36,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background font-sans text-foreground">
-        {children}
+        <RootProvider> {children}</RootProvider>
       </body>
     </html>
   );
