@@ -20,8 +20,21 @@ const mono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Career Tracking Platform",
-  description: "Track jobs, companies, and interviews efficiently",
+  title: {
+    default: "CareerOs",
+    template: "%s | CareerOs",
+  },
+  description:
+    "Career tracking system to manage jobs, companies, and interviews efficiently",
+  keywords: ["career", "jobs", "interview", "tracker", "recruitment"],
+  authors: [{ name: "CareerOs Team" }],
+  metadataBase: new URL("https://career-os.app"),
+  openGraph: {
+    title: "CareerOs",
+    description: "Track jobs and interviews efficiently",
+    type: "website",
+    url: "https://career-os.app",
+  },
 };
 
 export default function RootLayout({
