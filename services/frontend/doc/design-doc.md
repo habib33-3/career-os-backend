@@ -1,348 +1,431 @@
-# 🎨 Career Tracking Platform — Frontend Design System Specification
+# 🎨 Career Tracking Platform — Design System (Canonical v1.1)
 
-## 1. Design Philosophy (Non-Negotiable)
+This is a **strict design-code contract**.
+If a token is defined here, it MUST exist in `globals.css`.
 
-This is not a decorative UI. It’s a **high-density productivity system**.
-
-So the design principles are:
-
-- **Clarity > beauty**
-- **Speed of interaction > visual complexity**
-- **Information density > whitespace indulgence**
-- **Predictability > creativity in UI behavior**
-
-Think:
-
-> Linear, Notion-like structure + Linear.app dashboard precision + minimal SaaS polish
+If it is not in `globals.css`, it does NOT exist.
 
 ---
 
-## 2. Color System (Core Decision Layer)
+# 1. Core Philosophy
 
-We define a **semantic color system**, not random palette usage.
+This system is optimized for:
 
-### 2.1 Primary Color (Brand + Action Anchor)
+- High-density SaaS dashboards
+- Fast scanning and decision-making
+- Predictable UI behavior at scale
 
-- **Primary:** `#4F46E5` (Indigo-600)
+### Non-negotiables
 
-Usage:
-
-- Primary buttons
-- Active navigation state
-- Key highlights (selected filters, active tabs)
-- Links in dashboard context
-
-Why:
-
-- Strong SaaS identity
-- Trust + productivity association
-- Works well in dark and light themes
+- No arbitrary colors in UI
+- No component-level styling exceptions
+- No duplicated semantic meanings
+- Everything must be token-driven
 
 ---
 
-### 2.2 Secondary Color (Support Actions)
+# 2. Design Token Architecture
 
-- **Secondary:** `#06B6D4` (Cyan-500)
+We use 3 strict layers:
 
-Usage:
+## 2.1 Base Surfaces
 
-- Secondary buttons
-- Info highlights
-- Supporting charts (non-critical metrics)
-- Tags (neutral importance)
+Layout structure:
 
-Why:
+- background
+- card
+- popover
+- muted
 
-- Visually distinct from primary
-- Good for layered dashboards
+## 2.2 UI Intent (Actions)
 
----
+Interaction meaning:
 
-### 2.3 Accent Color (Attention / Signals)
+- primary
+- secondary
+- accent
+- destructive
 
-- **Accent (Warning/Highlight):** `#F59E0B` (Amber-500)
+## 2.3 Data States
 
-Usage:
+Business meaning:
 
-- Pending applications
-- “Needs attention” states
-- Reminders / alerts
-- Important UI nudges
-
-Why:
-
-- Human attention naturally reacts to warm tones
-- Avoids conflict with primary system colors
+- success
+- warning
+- error
+- info
 
 ---
 
-### 2.4 Status Colors (Critical System Layer)
+# 3. Color System (SOURCE OF TRUTH: CSS)
 
-We treat status as **data states**, not decoration.
+## 3.1 Base Surfaces
 
-| State   | Color     | Meaning             |
-| ------- | --------- | ------------------- |
-| Success | `#22C55E` | Offer / Completed   |
-| Warning | `#F59E0B` | Interview / Pending |
-| Error   | `#EF4444` | Rejected / Failed   |
-| Info    | `#3B82F6` | Applied / In review |
-
----
-
-### 2.5 Neutral Scale (Core UI Backbone)
-
-We use strict grayscale hierarchy:
-
-- `50 → 950` Tailwind-style scale
-
-Key usage rules:
-
-- `50–100`: Backgrounds
-- `200–300`: Borders
-- `400–500`: Muted text
-- `600–900`: Primary text hierarchy
-
-Example:
-
-- Primary text: `#111827`
-- Secondary text: `#6B7280`
+| Token      | Light           | Dark            | Usage           |
+| ---------- | --------------- | --------------- | --------------- |
+| background | oklch(0.99 0 0) | oklch(0.12 0 0) | app base        |
+| card       | oklch(1 0 0)    | oklch(0.17 0 0) | content surface |
+| popover    | same as card    | oklch(0.19 0 0) | floating UI     |
+| muted      | oklch(0.96 0 0) | oklch(0.22 0 0) | subtle surfaces |
 
 ---
 
-### 2.6 Background System
+## 3.2 UI Intent Colors (Actions)
 
-- **Light Mode Background:** `#F9FAFB`
-- **Dark Mode Background:** `#0B1220`
+| Token       | Value   | Meaning                       |
+| ----------- | ------- | ----------------------------- |
+| primary     | #4F46E5 | main action                   |
+| secondary   | #06B6D4 | supporting action             |
+| accent      | #F59E0B | attention / warning highlight |
+| destructive | #EF4444 | destructive action            |
 
-Card surface layering:
-
-- Level 0: App background
-- Level 1: Cards
-- Level 2: Floating panels / modals
-
----
-
-## 3. Typography System
-
-### Font Choice
-
-- Primary: **Inter**
-- Monospace (data/logs): **JetBrains Mono**
+> ⚠️ IMPORTANT: “accent” is intentionally aligned with warning behavior. No separate warning color exists.
 
 ---
 
-### Type Scale
+## 3.3 Data State Colors
 
-| Level | Size    | Usage           |
-| ----- | ------- | --------------- |
-| H1    | 32px    | Page titles     |
-| H2    | 24px    | Section headers |
-| H3    | 18px    | Card titles     |
-| Body  | 14–16px | Default text    |
-| Small | 12px    | Metadata        |
+| Token   | Value   |
+| ------- | ------- |
+| success | #22C55E |
+| warning | #F59E0B |
+| error   | #EF4444 |
+| info    | #3B82F6 |
 
 ---
 
-### Rules
+## 3.4 Neutral System
 
-- Never use more than 2 font weights in UI:
+Neutral system is **implicit**, not tokenized.
+
+Rules:
+
+- Background layering defines neutrality
+- No separate gray scale tokens are used
+- Contrast is achieved via surface elevation
+
+---
+
+## 3.5 Borders & Inputs
+
+- border = subtle separation layer
+- input = stronger interactive border
+
+### Dark mode rule
+
+> Borders must remain visible at minimum 12–18% opacity
+
+---
+
+# 4. Typography System
+
+Font stack (must exist in CSS):
+
+- Primary: Inter
+- Mono: JetBrains Mono
+
+---
+
+## Type Scale
+
+| Role  | Size    | Usage                        |
+| ----- | ------- | ---------------------------- |
+| H1    | 32px    | page title only              |
+| H2    | 24px    | section headers              |
+| H3    | 18px    | entity titles (job, company) |
+| Body  | 14–16px | default text                 |
+| Small | 12px    | metadata only                |
+
+---
+
+## Typography Rules
+
+- Max 2 font weights:
   - 400 (normal)
   - 600 (emphasis)
 
----
+- Headings are NOT decorative
 
-## 4. Layout System
+- H3 = entity-level labeling only
 
-### Grid
-
-- 12-column grid for dashboard views
-- 8px spacing system (strict)
+- Small text is never interactive
 
 ---
 
-### Spacing Scale
+# 5. Layout System
 
-- 4px (xs)
-- 8px (sm)
-- 12px (md)
-- 16px (lg)
-- 24px (xl)
-- 32px (2xl)
+## Grid
 
----
+- 12-column system
 
-### Container Widths
+## Container Widths
 
-- Dashboard max width: `1280px`
-- Content max width: `1024px`
+- App max width: 1280px
+- Content max width: 1024px
 
----
+## Spacing Scale (STRICT)
 
-## 5. Component Design System
-
-### 5.1 Buttons
-
-Types:
-
-- Primary → Indigo fill
-- Secondary → outline cyan
-- Ghost → text only
-
-Rules:
-
-- Height fixed: 40px
-- Radius: 8px
-- No mixed styling variants inside a page
+4 / 8 / 12 / 16 / 24 / 32
 
 ---
 
-### 5.2 Cards (Core UI Element)
+## 5.1 Density System (MUST BE IMPLEMENTED IN UI)
 
-Used everywhere: jobs, companies, interviews.
+```ts
+compact → 8px spacing
+default → 12px spacing
+comfortable → 16px spacing
+```
 
-Specs:
+Usage:
 
-- Background: white / dark gray
-- Border: subtle `200`
-- Radius: 12px
-- Padding: 16–20px
-
-States:
-
-- Default
-- Hover (slight elevation + border highlight)
-- Active (left accent bar in primary color)
+- tables → compact
+- dashboards → default
+- onboarding → comfortable
 
 ---
 
-### 5.3 Tables (Critical for job tracking)
+# 6. Component System
+
+---
+
+## 6.1 Buttons
+
+### Types
+
+- primary → indigo fill
+- secondary → cyan outline
+- ghost → text only
+
+### Rules
+
+- height: 40px fixed
+- radius: 8px
+- no mixed variants in same context
+
+### States
+
+- default
+- hover
+- active
+- disabled
+- loading
+
+---
+
+## 6.2 Cards (Core UI Unit)
+
+### Base
+
+- background: card token
+- border: subtle
+- radius: 12px
+- padding: 16–20px
+
+### States
+
+- default
+- hover (elevation + border highlight)
+- selected (primary accent border)
+
+---
+
+## 6.3 Tables (PRIMARY SYSTEM SURFACE)
+
+Tables are NOT secondary UI.
 
 Must support:
 
-- Sorting
-- Filtering
-- Inline status badges
-- Row hover actions
+- sorting
+- filtering
+- inline actions
+- status badges
 
-Rule:
+Row states:
 
-> Tables are primary UI, not secondary.
-
----
-
-### 5.4 Status Badges
-
-Pill style:
-
-- Rounded full
-- Small font (12px)
-- Color-coded by system states
+- default
+- hover
+- selected
+- disabled
 
 ---
 
-### 5.5 Forms
+## 6.4 Status Badges
 
-- Label above input (never inline)
-- Required fields marked subtly
-- Error states always below input
-- Auto-save indication (future)
-
----
-
-## 6. Dashboard Layout System
-
-### Structure
-
-```
-Sidebar | Main Content | Right Insight Panel (optional)
-```
-
-### Sidebar
-
-- Job Applications
-- Companies
-- Interviews
-- Analytics
-- Settings
-
-### Main Panel
-
-- Tables / lists / charts
-
-### Insight Panel
-
-- Quick stats
-- Upcoming interviews
-- Suggested actions
+- pill style
+- 12px text
+- strict mapping to data state tokens
 
 ---
 
-## 7. Data Visualization Rules
-
-### Chart Types
-
-- Funnel → Application pipeline
-- Line → Activity over time
-- Bar → Company comparisons
+## 6.5 Forms
 
 Rules:
 
-- No 3D charts
-- No decorative charts
-- Every chart must answer a question
+- label always above input
+- errors always inline below field
+- required fields subtle
+- inputs must use border/input tokens only
 
 ---
 
-## 8. Interaction Design Principles
+# 7. Dashboard Layout
 
-- Every action must have immediate feedback
-- No hidden actions
-- No hover-only critical functionality
-- Keyboard shortcuts for power users (future)
-
----
-
-## 9. Dark Mode Strategy
-
-Dark mode is **first-class**, not an afterthought.
-
-- Reduce contrast, not invert colors blindly
-- Avoid pure black backgrounds
-- Maintain semantic colors unchanged
-
----
-
-## 10. Design Token Summary (Core System)
-
-If you build only one thing from this doc, build this:
-
-```ts
-colors: {
-  primary: "#4F46E5",
-  secondary: "#06B6D4",
-  accent: "#F59E0B",
-  success: "#22C55E",
-  warning: "#F59E0B",
-  error: "#EF4444",
-  info: "#3B82F6",
-}
+```
+Sidebar | Main Content | Insight Panel (optional)
 ```
 
 ---
 
-## 11. Strategic Warning (Important)
+## Sidebar Rules
 
-Right now your biggest risk is:
+- max 7 primary items
+- active state always visible
+- collapse preserves icons + tooltips
+- max depth = 2 levels
 
-> Overbuilding UI complexity before locking data model + user flow.
+---
 
-Fix order should be:
+## Main Content
 
-1. Data schema (PostgreSQL)
-2. API design (NestJS modules)
-3. Core UI system (this doc)
-4. Only then screens
+- tables
+- workflows
+- charts
 
-If you skip this, you'll rebuild UI 2–3 times.
+## Insight Panel
+
+- stats
+- reminders
+- suggestions
+
+---
+
+# 8. Data Visualization Rules
+
+Allowed:
+
+- funnel (pipeline)
+- line (activity)
+- bar (comparison)
+
+Forbidden:
+
+- 3D charts
+- decorative charts
+- charts without a decision purpose
+
+Rule:
+
+> Every chart must answer ONE decision question
+
+---
+
+# 9. Interaction System
+
+Every interaction follows:
+
+## 1. Immediate feedback
+
+- optimistic UI OR skeleton loading
+
+## 2. Result state
+
+- success toast OR inline update
+
+## 3. Error state
+
+- inline error (no modals except critical system failure)
+
+---
+
+# 10. Dark Mode Rules
+
+Dark mode is a **separate elevation system**, not an inversion.
+
+Rules:
+
+- no pure black backgrounds
+- preserve semantic colors unchanged
+- maintain 3 visible surface layers
+- ensure borders remain visible at all times
+
+---
+
+# 11. CSS CONTRACT (MANDATORY MATCH)
+
+Your `globals.css` MUST define:
+
+---
+
+## Base Tokens
+
+- --background
+- --foreground
+- --card
+- --popover
+- --muted
+
+## UI Intent
+
+- --primary
+- --secondary
+- --accent
+- --destructive
+
+## Data States
+
+- --success
+- --warning
+- --error
+- --info
+
+## System
+
+- --border
+- --input
+- --ring
+
+## Sidebar
+
+- --sidebar
+- --sidebar-foreground
+- --sidebar-primary
+- --sidebar-accent
+- --sidebar-border
+- --sidebar-ring
+
+## Typography (REQUIRED)
+
+- --font-sans
+- --font-mono
+
+---
+
+## 12. Implementation Rule (NON-NEGOTIABLE)
+
+> If a token is not defined in CSS, it MUST NOT be used in UI.
+
+### Strict rules
+
+- no hex in components
+- no Tailwind arbitrary colors
+- no ad-hoc styling
+- no semantic duplication (one meaning = one token)
+
+---
+
+# 🧠 Final System State
+
+This version is now:
+
+## ✔ Fully consistent
+
+### ✔ No semantic conflicts
+
+### ✔ CSS-contract aligned
+
+### ✔ Scalable for production SaaS
+
+### ✔ Safe for team collaboration
 
 ---
