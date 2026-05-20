@@ -242,6 +242,12 @@ importers:
 
   services/frontend:
     dependencies:
+      "@tanstack/react-query":
+        specifier: ^5.100.10
+        version: 5.100.10(react@19.2.4)
+      "@tanstack/react-query-devtools":
+        specifier: ^5.100.10
+        version: 5.100.10(@tanstack/react-query@5.100.10(react@19.2.4))(react@19.2.4)
       axios:
         specifier: ^1.16.1
         version: 1.16.1
@@ -268,13 +274,16 @@ importers:
         version: 19.2.4(react@19.2.4)
       shadcn:
         specifier: ^4.7.0
-        version: 4.7.0(@types/node@20.19.41)(typescript@5.9.2)
+        version: 4.7.0(@types/node@24.12.4)(typescript@5.9.2)
       tailwind-merge:
         specifier: ^3.6.0
         version: 3.6.0
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      zustand:
+        specifier: ^5.0.13
+        version: 5.0.13(@types/react@19.2.2)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4))
     devDependencies:
       "@eslint/js":
         specifier: ^9.39.4
@@ -289,8 +298,8 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2(prettier@3.7.4)
       "@types/node":
-        specifier: ^20
-        version: 20.19.41
+        specifier: ^24
+        version: 24.12.4
       "@types/react":
         specifier: ^19
         version: 19.2.2
@@ -3443,6 +3452,35 @@ packages:
         integrity: sha512-Jm05Tjx+9yCLGv5qw1c+84Psds8MnyrEQYCB+FFk2lgGiUjlRqdxke4mVTuYrj2xnVZqKim2Apr5ySuQRYAw/w==,
       }
 
+  "@tanstack/query-core@5.100.10":
+    resolution:
+      {
+        integrity: sha512-8UR0yJR+GiQ40m3lPhUr0xbfAupe6GSQiksSBSa9SM2NjezFyxXCIA69/lz8cSoNKZLrw1/PktIyQBJcVeMi3w==,
+      }
+
+  "@tanstack/query-devtools@5.100.10":
+    resolution:
+      {
+        integrity: sha512-3DmJf25hDPus5IpVvp6ujXv6bKV2zPzI9vpbAmpJigsL/H6DPvPjmf7/Q9yVKEke//8fgeQ45abjgnLuyYxAiw==,
+      }
+
+  "@tanstack/react-query-devtools@5.100.10":
+    resolution:
+      {
+        integrity: sha512-zes0+o9ef5rAZXJ9f/SeaLs2nufJaeVkZkl/Or9NGrWVF41kL9Od9ED9nCwtQlgiF2VGtrzhEw5AU/igAO+aAg==,
+      }
+    peerDependencies:
+      "@tanstack/react-query": ^5.100.10
+      react: ^18 || ^19
+
+  "@tanstack/react-query@5.100.10":
+    resolution:
+      {
+        integrity: sha512-FLaZf2RCrA/Zgp4aiu5tG3TyasTRO7aZ99skxQpr3Hg/zXOhu6yq5FZCYQ/tRaJtM9ylnoK8tFK7PolXQadv6Q==,
+      }
+    peerDependencies:
+      react: ^18 || ^19
+
   "@tokenizer/inflate@0.4.1":
     resolution:
       {
@@ -3712,16 +3750,16 @@ packages:
         integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==,
       }
 
-  "@types/node@20.19.41":
-    resolution:
-      {
-        integrity: sha512-ECymXOukMnOoVkC2bb1Vc/w/836DXncOg5m8Xj1RH7xSHZJWNYY6Zh7EH477vcnD5egKNNfy2RpNOmuChhFPgQ==,
-      }
-
   "@types/node@22.19.19":
     resolution:
       {
         integrity: sha512-dyh/xO2Fh5bYrfWaaqGrRQQGkNdmYw6AmaAUvYeUMNTWQtvb796ikLdmTchRmOlOiIJ1TDXfWgVx1QkUlQ6Hew==,
+      }
+
+  "@types/node@24.12.4":
+    resolution:
+      {
+        integrity: sha512-GUUEShf+PBCGW2KaXwcIt3Yk+e3pkKwWKb9GSyM9WQVE+ep2jzmHdGsHzu4wgcZy5fN9FBdVzjpBQsYlpfpgLA==,
       }
 
   "@types/passport-jwt@4.0.1":
@@ -12222,6 +12260,12 @@ packages:
         integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==,
       }
 
+  undici-types@7.16.0:
+    resolution:
+      {
+        integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==,
+      }
+
   undici@6.25.0:
     resolution:
       {
@@ -12730,6 +12774,27 @@ packages:
       {
         integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==,
       }
+
+  zustand@5.0.13:
+    resolution:
+      {
+        integrity: sha512-efI2tVaVQPqtOh114loML/Z80Y4NP3yc+Ff0fYiZJPauNeWZeIp/bRFD7I9bfmCOYBh/PHxlglQ9+wvlwnPikQ==,
+      }
+    engines: { node: ">=12.20.0" }
+    peerDependencies:
+      "@types/react": ">=18.0.0"
+      immer: ">=9.0.6"
+      react: ">=18.0.0"
+      use-sync-external-store: ">=1.2.0"
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
 snapshots:
   "@alloc/quick-lru@5.2.0": {}
@@ -13371,12 +13436,12 @@ snapshots:
     optionalDependencies:
       "@types/node": 22.19.19
 
-  "@inquirer/confirm@6.0.13(@types/node@20.19.41)":
+  "@inquirer/confirm@6.0.13(@types/node@24.12.4)":
     dependencies:
-      "@inquirer/core": 11.1.10(@types/node@20.19.41)
-      "@inquirer/type": 4.0.5(@types/node@20.19.41)
+      "@inquirer/core": 11.1.10(@types/node@24.12.4)
+      "@inquirer/type": 4.0.5(@types/node@24.12.4)
     optionalDependencies:
-      "@types/node": 20.19.41
+      "@types/node": 24.12.4
 
   "@inquirer/core@10.3.2(@types/node@22.19.19)":
     dependencies:
@@ -13391,17 +13456,17 @@ snapshots:
     optionalDependencies:
       "@types/node": 22.19.19
 
-  "@inquirer/core@11.1.10(@types/node@20.19.41)":
+  "@inquirer/core@11.1.10(@types/node@24.12.4)":
     dependencies:
       "@inquirer/ansi": 2.0.5
       "@inquirer/figures": 2.0.5
-      "@inquirer/type": 4.0.5(@types/node@20.19.41)
+      "@inquirer/type": 4.0.5(@types/node@24.12.4)
       cli-width: 4.1.0
       fast-wrap-ansi: 0.2.0
       mute-stream: 3.0.0
       signal-exit: 4.1.0
     optionalDependencies:
-      "@types/node": 20.19.41
+      "@types/node": 24.12.4
 
   "@inquirer/editor@4.2.23(@types/node@22.19.19)":
     dependencies:
@@ -13513,9 +13578,9 @@ snapshots:
     optionalDependencies:
       "@types/node": 22.19.19
 
-  "@inquirer/type@4.0.5(@types/node@20.19.41)":
+  "@inquirer/type@4.0.5(@types/node@24.12.4)":
     optionalDependencies:
-      "@types/node": 20.19.41
+      "@types/node": 24.12.4
 
   "@ioredis/commands@1.5.1": {}
 
@@ -15016,6 +15081,21 @@ snapshots:
       postcss: 8.5.14
       tailwindcss: 4.3.0
 
+  "@tanstack/query-core@5.100.10": {}
+
+  "@tanstack/query-devtools@5.100.10": {}
+
+  "@tanstack/react-query-devtools@5.100.10(@tanstack/react-query@5.100.10(react@19.2.4))(react@19.2.4)":
+    dependencies:
+      "@tanstack/query-devtools": 5.100.10
+      "@tanstack/react-query": 5.100.10(react@19.2.4)
+      react: 19.2.4
+
+  "@tanstack/react-query@5.100.10(react@19.2.4)":
+    dependencies:
+      "@tanstack/query-core": 5.100.10
+      react: 19.2.4
+
   "@tokenizer/inflate@0.4.1":
     dependencies:
       debug: 4.4.3
@@ -15174,13 +15254,13 @@ snapshots:
 
   "@types/ms@2.1.0": {}
 
-  "@types/node@20.19.41":
-    dependencies:
-      undici-types: 6.21.0
-
   "@types/node@22.19.19":
     dependencies:
       undici-types: 6.21.0
+
+  "@types/node@24.12.4":
+    dependencies:
+      undici-types: 7.16.0
 
   "@types/passport-jwt@4.0.1":
     dependencies:
@@ -19364,9 +19444,9 @@ snapshots:
 
   ms@2.1.3: {}
 
-  msw@2.14.6(@types/node@20.19.41)(typescript@5.9.2):
+  msw@2.14.6(@types/node@24.12.4)(typescript@5.9.2):
     dependencies:
-      "@inquirer/confirm": 6.0.13(@types/node@20.19.41)
+      "@inquirer/confirm": 6.0.13(@types/node@24.12.4)
       "@mswjs/interceptors": 0.41.9
       "@open-draft/deferred-promise": 3.0.0
       "@types/statuses": 2.0.6
@@ -20672,7 +20752,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  shadcn@4.7.0(@types/node@20.19.41)(typescript@5.9.2):
+  shadcn@4.7.0(@types/node@24.12.4)(typescript@5.9.2):
     dependencies:
       "@babel/core": 7.29.0
       "@babel/parser": 7.29.3
@@ -20693,7 +20773,7 @@ snapshots:
       fuzzysort: 3.1.0
       https-proxy-agent: 7.0.6
       kleur: 4.1.5
-      msw: 2.14.6(@types/node@20.19.41)(typescript@5.9.2)
+      msw: 2.14.6(@types/node@24.12.4)(typescript@5.9.2)
       node-fetch: 3.3.2
       open: 11.0.0
       ora: 8.2.0
@@ -21334,6 +21414,8 @@ snapshots:
 
   undici-types@6.21.0: {}
 
+  undici-types@7.16.0: {}
+
   undici@6.25.0:
     optional: true
 
@@ -21685,3 +21767,9 @@ snapshots:
   zod@3.25.76: {}
 
   zod@4.4.3: {}
+
+  zustand@5.0.13(@types/react@19.2.2)(react@19.2.4)(use-sync-external-store@1.6.0(react@19.2.4)):
+    optionalDependencies:
+      "@types/react": 19.2.2
+      react: 19.2.4
+      use-sync-external-store: 1.6.0(react@19.2.4)

@@ -30,6 +30,15 @@ privateApi.interceptors.response.use(
       onAuthFailure?.();
     }
 
+    // Handle network errors and other non-response errors
+    if (!error.response) {
+      return Promise.reject({
+        message: error.message || "Network error",
+        status: 0,
+        data: null,
+      });
+    }
+
     return Promise.reject({
       message: error?.response?.data?.message || "Authentication error",
       status,

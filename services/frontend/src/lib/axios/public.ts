@@ -6,9 +6,11 @@ export const publicApi = createApiClient();
 publicApi.interceptors.response.use(
   (res) => res,
   (error) => {
-    return Promise.reject({
+    const normalizedError = {
       message: error?.response?.data?.message || "Public API error",
       status: error?.response?.status,
-    });
+      originalError: error,
+    };
+    return Promise.reject(normalizedError);
   }
 );

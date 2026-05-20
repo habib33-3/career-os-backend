@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { useRouter } from "next/navigation";
+
 import ErrorState from "@/components/shared/ErrorState";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +18,8 @@ export default function ErrorPage({
     console.error("Route Error:", error);
   }, [error]);
 
+  const router = useRouter();
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-6">
       <ErrorState
@@ -27,7 +31,7 @@ export default function ErrorPage({
 
             <Button
               variant="outline"
-              onClick={() => (window.location.href = "/dashboard")}
+              onClick={() => router.push("/dashboard")}
             >
               Go to Dashboard
             </Button>
