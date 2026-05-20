@@ -49,7 +49,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full bg-background font-sans text-foreground">
-        <RootProvider> {children}</RootProvider>
+        <RootProvider>
+          <main>{children}</main>
+        </RootProvider>
       </body>
     </html>
   );
