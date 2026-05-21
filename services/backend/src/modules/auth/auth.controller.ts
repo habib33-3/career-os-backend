@@ -52,8 +52,15 @@ export class AuthController {
     @Public()
     @Post("register")
     @ApiOperation({ summary: "Register a new user", security: [] })
-    async register(@Body() payload: RegisterDto) {
-        return this.authService.register(payload);
+    async register(
+        @Body() payload: RegisterDto,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        const result = await this.authService.register(payload);
+
+        this.setAuthCookies(res, result.token);
+
+        return result;
     }
 
     @Public()

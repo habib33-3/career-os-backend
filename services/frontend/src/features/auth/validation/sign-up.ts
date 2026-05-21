@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const signUpValidationSchema = z
+export const signUpPayloadValidationSchema = z
   .object({
     name: z.string().trim().min(1, "Name is required"),
 
@@ -15,4 +15,4 @@ export const signUpValidationSchema = z
     path: ["confirmPassword"],
   });
 
-export type SignUpFormData = z.infer<typeof signUpValidationSchema>;
+export type SignUpPayloadType = z.infer<typeof signUpPayloadValidationSchema>;

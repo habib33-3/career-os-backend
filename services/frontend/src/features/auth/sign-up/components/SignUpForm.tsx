@@ -19,14 +19,15 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
+import useSignUp from "../../hooks/useSignUp";
 import {
-  type SignUpFormData,
-  signUpValidationSchema,
+  type SignUpPayloadType,
+  signUpPayloadValidationSchema,
 } from "../../validation/sign-up";
 
 const SignUpForm = () => {
-  const form = useForm<SignUpFormData>({
-    resolver: zodResolver(signUpValidationSchema),
+  const form = useForm<SignUpPayloadType>({
+    resolver: zodResolver(signUpPayloadValidationSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -43,8 +44,10 @@ const SignUpForm = () => {
     formState: { errors },
   } = form;
 
-  const onSubmit = (data: SignUpFormData) => {
-    // console.info("submit:", data);
+  const mutation = useSignUp();
+
+  const onSubmit = async (data: SignUpPayloadType) => {
+    await mutation.mutateAsync(data);
   };
 
   return (
