@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import PasswordField from "@/components/shared/form-field/PasswordField";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -83,30 +84,18 @@ const SignUpForm = () => {
             </Field>
 
             {/* Password */}
-            <Field data-invalid={!!errors.password}>
-              <FieldLabel>Password</FieldLabel>
-              <Input
-                {...register("password")}
-                type="password"
-                placeholder="••••••••"
-                autoComplete="new-password"
-              />
-              <FieldError errors={errors.password ? [errors.password] : []} />
-            </Field>
+            <PasswordField
+              register={register}
+              errors={errors}
+              name="password"
+            />
 
             {/* Confirm Password */}
-            <Field data-invalid={!!errors.confirmPassword}>
-              <FieldLabel>Confirm Password</FieldLabel>
-              <Input
-                {...register("confirmPassword")}
-                type="password"
-                placeholder="••••••••"
-                autoComplete="new-password"
-              />
-              <FieldError
-                errors={errors.confirmPassword ? [errors.confirmPassword] : []}
-              />
-            </Field>
+            <PasswordField
+              register={register}
+              errors={errors}
+              name="confirmPassword"
+            />
           </FieldGroup>
 
           <div className="mt-6 flex gap-3">
