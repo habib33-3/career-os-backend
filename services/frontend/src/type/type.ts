@@ -1,5 +1,3 @@
-// api-response.ts
-
 export type CursorMeta = {
   nextCursor: string | null;
   hasNext: boolean;
@@ -31,4 +29,12 @@ export type ApiError = {
   message: string;
   statusCode?: number;
   meta?: Record<string, unknown>;
+};
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+  role: "USER" | "ADMIN";
 };
