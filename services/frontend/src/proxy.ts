@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 const protectedRoutes = ["/dashboard", "/profile", "/settings"];
 const authRoutes = ["/sign-in", "/sign-up"];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const accessToken = req.cookies.get("access_token")?.value;
@@ -14,7 +14,6 @@ export function middleware(req: NextRequest) {
 
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  // UX redirect only (NOT security)
   if (isProtectedRoute && !accessToken) {
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
