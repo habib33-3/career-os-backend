@@ -16,6 +16,7 @@ import { AppCache } from "@/infra/db/redis/app-cache.service";
 
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { generateAvatar } from "./util/generate-avatar";
 
 @Injectable()
 export class AuthService {
@@ -57,6 +58,11 @@ export class AuthService {
             where: {
                 email,
             },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+            },
         });
 
         if (!user) {
@@ -77,11 +83,21 @@ export class AuthService {
 
         const hashedPassword = await hashPassword(payload.password);
 
+        const avatar = generateAvatar(payload.name);
+
         const user = await this.prisma.user.create({
             data: {
                 email: payload.email,
                 name: payload.name,
                 password: hashedPassword,
+                image: avatar,
+            },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                name: true,
+                image: true,
             },
         });
 
@@ -106,12 +122,20 @@ export class AuthService {
                 accessToken,
                 refreshToken,
             },
+            user,
         };
     }
 
     async login(payload: LoginDto) {
         const user = await this.prisma.user.findUnique({
             where: { email: payload.email },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                password: true,
+                image: true,
+            },
         });
 
         if (!user) throw new UnauthorizedException("Wrong credentials");
@@ -141,6 +165,7 @@ export class AuthService {
                 accessToken,
                 refreshToken,
             },
+            user,
         };
     }
 
@@ -153,6 +178,7 @@ export class AuthService {
                 name: true,
                 role: true,
                 createdAt: true,
+                image: true,
             },
         });
 

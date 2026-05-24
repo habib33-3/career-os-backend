@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import SignUpImage from "@/assets/sign-up-image-.svg";
+import SignUpImage from "@/assets/sign-up-image.svg";
 
 const SignUpImages = () => {
   return (

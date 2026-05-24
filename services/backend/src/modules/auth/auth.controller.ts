@@ -60,7 +60,10 @@ export class AuthController {
 
         this.setAuthCookies(res, result.token);
 
-        return result;
+        return {
+            message: result.message,
+            data: result.user,
+        };
     }
 
     @Public()
@@ -74,13 +77,19 @@ export class AuthController {
 
         this.setAuthCookies(res, result.token);
 
-        return result;
+        return {
+            message: result.message,
+            data: result.user,
+        };
     }
 
     @Get("me")
     @ApiOperation({ summary: "Get current user info" })
     async getCurrentUser(@CurrentUser("sub") userId: string) {
-        return this.authService.getCurrentUser(userId);
+        const user = await this.authService.getCurrentUser(userId);
+        return {
+            data: user,
+        };
     }
 
     @UseGuards(RefreshTokenAuthGuard)
@@ -94,9 +103,13 @@ export class AuthController {
             };
         }
     ) {
-        return this.authService.refreshToken(
+        const tokens = await this.authService.refreshToken(
             req.user.sub,
             req.user.refreshToken
         );
+
+        return {
+            data: tokens,
+        };
     }
 }

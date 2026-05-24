@@ -1,19 +1,23 @@
+import { useEffect } from "react";
+
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 import { publicApi } from "@/lib/axios/public";
 
+import { useAuthStore } from "@/stores/useAuthStore";
 import type { ApiResponse, User } from "@/type/type";
 
 const getMe = async () => {
   const res = await publicApi.get<ApiResponse<User>>("/auth/me");
-
-  return res.data.data; // normalize here
+  return res.data.data;
 };
 
 const useAuth = () => {
+  const { user, setUser, clearUser } = useAuthStore();
+
   const query = useQuery<User | null>({
-    queryKey: ["me"],
+    queryKey: ["auth"],
     queryFn: async () => {
       try {
         return await getMe();
@@ -25,13 +29,14 @@ const useAuth = () => {
       }
     },
     retry: false,
-    staleTime: 1000 * 60 * 5,
+    staleTime: Infinity,
   });
 
   return {
-    user: query.data ?? null,
+    user,
     isLoading: query.isLoading,
-    isAuthenticated: !!query.data,
+    isAuthenticated: !!user,
+    refetch: query.refetch,
   };
 };
 
