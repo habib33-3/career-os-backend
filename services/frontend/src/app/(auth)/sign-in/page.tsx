@@ -1,5 +1,5 @@
-import SIgnInImage from "@/features/auth/sign-in/components/SIgnInImage";
-import SignInForm from "@/features/auth/sign-in/components/SignInForm";
+import SIgnInImage from "@/features/auth/components/sign-in/SIgnInImage";
+import SignInForm from "@/features/auth/components/sign-in/SignInForm";
 
 const SignInPage = () => {
   return (

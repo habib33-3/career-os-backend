@@ -10,6 +10,7 @@ const getUser = async () => {
     headers: {
       Cookie: cookieStore.toString(),
     },
+    credentials: "include",
     cache: "no-store",
   });
 

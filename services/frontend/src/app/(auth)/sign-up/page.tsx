@@ -1,5 +1,5 @@
-import SignUpForm from "@/features/auth/sign-up/components/SignUpForm";
-import SignUpImages from "@/features/auth/sign-up/components/SignUpImages";
+import SignUpForm from "@/features/auth/components/sign-up/SignUpForm";
+import SignUpImages from "@/features/auth/components/sign-up/SignUpImages";
 
 const SignUpPage = () => {
   return (
