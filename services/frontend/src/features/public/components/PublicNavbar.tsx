@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 import { Building2, Home, Info, Menu, Search, X } from "lucide-react";
 
+import ThemeToggle from "@/components/shared/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -45,7 +46,7 @@ const PublicNavbar = () => {
             alt="CareerOS"
             width={28}
             height={28}
-            className="rounded-md"
+            className="h-auto rounded-md"
           />
           <span className="text-sm font-medium tracking-tight">CareerOS</span>
         </Link>
@@ -74,6 +75,7 @@ const PublicNavbar = () => {
 
         {/* Desktop Auth */}
         <div className="hidden shrink-0 items-center gap-2 md:flex">
+          <ThemeToggle />
           <Separator
             orientation="vertical"
             className="h-4"
@@ -123,7 +125,7 @@ const PublicNavbar = () => {
                       alt="CareerOS"
                       width={24}
                       height={24}
-                      className="rounded-md"
+                      className="h-auto rounded-md"
                     />
                     <span className="text-sm font-medium">CareerOS</span>
                   </Link>
@@ -177,6 +179,9 @@ const PublicNavbar = () => {
 
                 {/* Sheet Footer */}
                 <div className="flex flex-col gap-2 border-t border-border/40 p-3">
+                  <div className="flex justify-end">
+                    <ThemeToggle /> {/* ← add here */}
+                  </div>
                   <SheetClose asChild>
                     <Button
                       variant="outline"
