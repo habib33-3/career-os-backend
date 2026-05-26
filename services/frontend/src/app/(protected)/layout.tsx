@@ -1,33 +1,28 @@
 import { type PropsWithChildren } from "react";
-import { cache } from "react";
 
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-
-const getUser = cache(async () => {
-  const cookieStore = await cookies();
-
-  const res = await fetch(`${process.env.API_URL}/auth/me`, {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-    cache: "no-store",
-  });
-
-  if (!res.ok) return null;
-
-  const data = await res.json();
-  return data?.data ?? null;
-});
+import Navbar from "@/components/shared/Navbar";
+import Sidebar from "@/components/shared/Sidebar";
 
 const ProtectedLayout = async ({ children }: PropsWithChildren) => {
-  const user = await getUser();
+  // Authentication redirects are handled in the middleware (src/proxy.ts).
+  // Avoid performing an additional server-side redirect here to prevent
+  // redirect loops between middleware and layout.
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar />
 
-  if (!user) {
-    redirect("/sign-in");
-  }
+      {/* App body */}
+      <div className="flex">
+        {/* Sidebar (desktop only) */}
+        <Sidebar />
 
-  return children;
+        {/* Main content */}
+        <main className="flex-1 px-4 py-4 md:px-6 md:py-6">
+          <div className="mx-auto w-full max-w-6xl">{children}</div>
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default ProtectedLayout;

@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Building2, Home, Info, Menu, Search, X } from "lucide-react";
 
+import Logo from "@/components/shared/Logo";
 import ThemeToggle from "@/components/shared/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -15,8 +15,6 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
-import logo from "@/assets/logo.png";
 
 const navPaths = [
   { name: "Home", path: "/", icon: Home },
@@ -37,19 +35,7 @@ const PublicNavbar = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background">
       <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex shrink-0 items-center gap-2"
-        >
-          <Image
-            src={logo}
-            alt="CareerOS"
-            width={28}
-            height={28}
-            className="h-auto rounded-md"
-          />
-          <span className="text-sm font-medium tracking-tight">CareerOS</span>
-        </Link>
+        <Logo />
 
         {/* Desktop Nav */}
         <div className="hidden items-center gap-0.5 md:flex">
@@ -116,19 +102,7 @@ const PublicNavbar = () => {
               <div className="flex h-full flex-col">
                 {/* Sheet Header */}
                 <div className="flex items-center justify-between border-b border-border/40 px-4 py-3.5">
-                  <Link
-                    href="/"
-                    className="flex items-center gap-2"
-                  >
-                    <Image
-                      src={logo}
-                      alt="CareerOS"
-                      width={24}
-                      height={24}
-                      className="h-auto rounded-md"
-                    />
-                    <span className="text-sm font-medium">CareerOS</span>
-                  </Link>
+                  <Logo />
                   <SheetClose asChild>
                     <Button
                       variant="outline"
