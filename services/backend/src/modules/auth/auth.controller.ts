@@ -92,6 +92,17 @@ export class AuthController {
         };
     }
 
+    @Post("logout")
+    @ApiOperation({ summary: "Logout a user" })
+    async logout(@Res({ passthrough: true }) res: Response) {
+        res.clearCookie(ACCESS_TOKEN, { path: "/" });
+        res.clearCookie(REFRESH_TOKEN, { path: "/" });
+
+        return {
+            message: "Logout successful",
+        };
+    }
+
     @UseGuards(RefreshTokenAuthGuard)
     @Post("refresh")
     async refresh(

@@ -3,6 +3,7 @@ import * as dns from "node:dns";
 import { RequestMethod, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 
+import cookieParser from "cookie-parser";
 import helmet from "helmet";
 
 import { AppModule } from "./app.module";
@@ -33,6 +34,8 @@ async function bootstrap() {
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         origin: env.ALLOWED_ORIGINS,
     });
+
+    app.use(cookieParser());
 
     // Middleware
     app.use(helmet());

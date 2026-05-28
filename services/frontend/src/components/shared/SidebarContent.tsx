@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
+import LogoutButton from "@/features/auth/components/logout/LogoutButton";
+
 const items = [
   { name: "Job Applications", path: "/job-applications" },
   { name: "Companies", path: "/companies" },
@@ -34,6 +36,7 @@ const SidebarContent = () => {
           </Link>
         );
       })}
+      <LogoutButton />
     </nav>
   );
 };
