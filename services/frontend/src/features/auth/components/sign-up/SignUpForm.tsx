@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
 import PasswordField from "@/components/shared/form-field/PasswordField";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,36 +20,10 @@ import {
 import { Input } from "@/components/ui/input";
 
 import useSignUp from "../../hooks/useSignUp";
-import {
-  type SignUpPayloadType,
-  signUpPayloadValidationSchema,
-} from "../../validation/sign-up";
 
 const SignUpForm = () => {
-  const mutation = useSignUp();
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting, isValid },
-  } = useForm<SignUpPayloadType>({
-    resolver: zodResolver(signUpPayloadValidationSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-    mode: "onChange",
-  });
-
-  const onSubmit = async (data: SignUpPayloadType) => {
-    await mutation.mutateAsync(data);
-    reset();
-  };
-
-  const loading = isSubmitting || mutation.isPending;
+  const { loading, handleSubmit, register, onSubmit, errors, isValid, reset } =
+    useSignUp();
 
   return (
     <div className="w-full max-w-md">
@@ -126,7 +97,7 @@ const SignUpForm = () => {
                 disabled={loading || !isValid}
                 className="w-full bg-primary text-primary-foreground shadow-md shadow-primary/20 transition hover:bg-primary/90"
               >
-                {mutation.isPending ? "Creating account..." : "Create account"}
+                {loading ? "Creating account..." : "Create account"}
               </Button>
 
               {/* RESET (de-emphasized UX role) */}

@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-
 import PasswordField from "@/components/shared/form-field/PasswordField";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,38 +20,10 @@ import {
 import { Input } from "@/components/ui/input";
 
 import useSignIn from "../../hooks/useSignIn";
-import {
-  type SignInPayloadType,
-  SignInValidationSchema,
-} from "../../validation/sign-in";
 
 const SignInForm = () => {
-  const mutation = useSignIn();
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting, isValid },
-  } = useForm<SignInPayloadType>({
-    resolver: zodResolver(SignInValidationSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-    mode: "onChange",
-  });
-
-  const onSubmit = async (data: SignInPayloadType) => {
-    try {
-      await mutation.mutateAsync(data);
-      reset();
-    } catch {
-      // handled globally in mutation
-    }
-  };
-
-  const loading = isSubmitting || mutation.isPending;
+  const { handleSubmit, register, onSubmit, errors, loading, isValid } =
+    useSignIn();
 
   return (
     <Card className="w-full max-w-md rounded-2xl border border-border/60 bg-card shadow-xl">
@@ -106,7 +75,7 @@ const SignInForm = () => {
               disabled={loading || !isValid}
               className="w-full bg-primary text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:shadow-lg disabled:opacity-60"
             >
-              {mutation.isPending ? "Signing in..." : "Sign in"}
+              {loading ? "Signing in..." : "Sign in"}
             </Button>
 
             {/* FOOTER TEXT */}
