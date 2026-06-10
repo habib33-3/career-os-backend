@@ -112,15 +112,22 @@ export class AuthController {
                 sub: string;
                 refreshToken: string;
             };
-        }
+        },
+
+        @Res() res: Response
     ) {
         const tokens = await this.authService.refreshToken(
             req.user.sub,
             req.user.refreshToken
         );
 
+        this.setAuthCookies(res, tokens);
+
         return {
-            data: tokens,
+            message: "Token refreshed successfully",
+            data: {
+                accessToken: tokens.accessToken,
+            },
         };
     }
 }
