@@ -23,6 +23,7 @@ type PasswordFieldProps<T extends FieldValues> = {
   name: Path<T>;
   label?: string;
   className?: string;
+  autoComplete?: "new-password" | "current-password";
 };
 
 export default function PasswordField<T extends FieldValues>({
@@ -31,6 +32,7 @@ export default function PasswordField<T extends FieldValues>({
   name,
   label = "Password",
   className,
+  autoComplete,
 }: PasswordFieldProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -49,7 +51,7 @@ export default function PasswordField<T extends FieldValues>({
           {...register(name)}
           type={showPassword ? "text" : "password"}
           placeholder="••••••••"
-          autoComplete="new-password"
+          autoComplete={autoComplete}
           className="pr-10"
         />
 

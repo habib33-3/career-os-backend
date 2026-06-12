@@ -5,8 +5,6 @@ import Sidebar from "@/components/Navigation/Sidebar";
 import AuthProvider from "@/providers/AuthProvider";
 
 const ProtectedLayout = ({ children }: PropsWithChildren) => {
-  console.log("🚀 ~ ProtectedLayout ~ d:");
-
   return (
     <div className="flex min-h-screen bg-background text-foreground">
       {/* Sidebar */}

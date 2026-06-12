@@ -67,6 +67,7 @@ const SignInForm = () => {
               errors={errors}
               name="password"
               label="Password"
+              autoComplete="current-password"
             />
 
             {/* SUBMIT */}

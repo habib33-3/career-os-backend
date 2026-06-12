@@ -1,4 +1,6 @@
-import { Toaster, type ToasterProps } from "sonner";
+import { type ToasterProps } from "sonner";
+
+import { Toaster } from "@/components/ui/sonner";
 
 const ToasterProvider = () => {
   const toasterConfig: ToasterProps = {
@@ -9,7 +11,6 @@ const ToasterProvider = () => {
     duration: 2500,
     expand: false,
     visibleToasts: 3,
-    theme: "system", //TODO: make this dynamic based on user preference
   };
 
   return <Toaster {...toasterConfig} />;

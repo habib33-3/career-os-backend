@@ -19,7 +19,8 @@ const SidebarContent = () => {
   return (
     <nav className="flex flex-col gap-1 p-3">
       {items.map((item) => {
-        const active = pathname === item.path;
+        const active =
+          pathname === item.path || pathname.startsWith(item.path + "/");
 
         return (
           <Link

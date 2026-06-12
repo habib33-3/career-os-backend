@@ -25,28 +25,49 @@ import { RefreshTokenAuthGuard } from "./guard/refresh-token.guard";
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
-    private setAuthCookies(
-        res: Response,
-        tokens: { accessToken: string; refreshToken: string }
-    ) {
+    /**
+     * Single source of truth for cookie identity
+     * Must match exactly for set + clear operations
+     */
+    private getBaseCookieOptions() {
         const isProd = env.NODE_ENV === "production";
 
-        const cookieOptions = {
+        return {
             httpOnly: true,
             secure: isProd,
             sameSite: isProd ? "none" : "lax",
             path: "/",
         } as const;
+    }
+
+    /**
+     * Sets auth cookies (access + refresh)
+     */
+    private setAuthCookies(
+        res: Response,
+        tokens: { accessToken: string; refreshToken: string }
+    ) {
+        const base = this.getBaseCookieOptions();
 
         res.cookie(ACCESS_TOKEN, tokens.accessToken, {
-            ...cookieOptions,
+            ...base,
             maxAge: env.ACCESS_TOKEN_EXPIRES,
         });
 
         res.cookie(REFRESH_TOKEN, tokens.refreshToken, {
-            ...cookieOptions,
+            ...base,
             maxAge: env.REFRESH_TOKEN_EXPIRES,
         });
+    }
+
+    /**
+     * Clears auth cookies safely (must match base options)
+     */
+    private clearAuthCookies(res: Response) {
+        const base = this.getBaseCookieOptions();
+
+        res.clearCookie(ACCESS_TOKEN, base);
+        res.clearCookie(REFRESH_TOKEN, base);
     }
 
     @Public()
@@ -87,6 +108,7 @@ export class AuthController {
     @ApiOperation({ summary: "Get current user info" })
     async getCurrentUser(@CurrentUser("sub") userId: string) {
         const user = await this.authService.getCurrentUser(userId);
+
         return {
             data: user,
         };
@@ -100,8 +122,7 @@ export class AuthController {
     ) {
         await this.authService.logout(userId);
 
-        res.clearCookie(ACCESS_TOKEN, { path: "/" });
-        res.clearCookie(REFRESH_TOKEN, { path: "/" });
+        this.clearAuthCookies(res);
 
         return {
             message: "Logout successful",
@@ -118,11 +139,7 @@ export class AuthController {
                 refreshToken: string;
             };
         },
-
-        @Res({
-            passthrough: true,
-        })
-        res: Response
+        @Res({ passthrough: true }) res: Response
     ) {
         const tokens = await this.authService.refreshToken(
             req.user.sub,

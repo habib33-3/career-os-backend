@@ -23,6 +23,7 @@ function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label="Open navigation menu"
               >
                 <Menu className="h-5 w-5" />
               </Button>
@@ -49,11 +50,12 @@ function Navbar() {
             className="grayscale"
           />
           <AvatarFallback className="bg-muted text-muted-foreground">
-            {user?.name.charAt(0)}
+            {user?.name?.charAt(0)}
           </AvatarFallback>
         </Avatar>
+
+        <ThemeToggle />
       </div>
-      <ThemeToggle />
     </header>
   );
 }

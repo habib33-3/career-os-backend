@@ -81,6 +81,7 @@ const SignUpForm = () => {
                 errors={errors}
                 name="password"
                 label="Password"
+                autoComplete="new-password"
               />
 
               {/* CONFIRM PASSWORD */}
@@ -89,6 +90,7 @@ const SignUpForm = () => {
                 errors={errors}
                 name="confirmPassword"
                 label="Confirm Password"
+                autoComplete="new-password"
               />
 
               {/* PRIMARY CTA */}
