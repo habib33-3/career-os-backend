@@ -94,7 +94,12 @@ export class AuthController {
 
     @Post("logout")
     @ApiOperation({ summary: "Logout a user" })
-    async logout(@Res({ passthrough: true }) res: Response) {
+    async logout(
+        @Res({ passthrough: true }) res: Response,
+        @CurrentUser("sub") userId: string
+    ) {
+        await this.authService.logout(userId);
+
         res.clearCookie(ACCESS_TOKEN, { path: "/" });
         res.clearCookie(REFRESH_TOKEN, { path: "/" });
 
@@ -114,7 +119,10 @@ export class AuthController {
             };
         },
 
-        @Res() res: Response
+        @Res({
+            passthrough: true,
+        })
+        res: Response
     ) {
         const tokens = await this.authService.refreshToken(
             req.user.sub,

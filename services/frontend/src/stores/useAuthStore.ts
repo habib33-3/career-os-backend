@@ -7,8 +7,8 @@ type AuthState = {
   user: User | null;
   hydrated: boolean;
   setUser: (user: User | null) => void;
-
   clearUser: () => void;
+  setHydrated: (v: boolean) => void;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -19,6 +19,7 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => set({ user }),
       clearUser: () => set({ user: null }),
+      setHydrated: (v: boolean) => set({ hydrated: v }),
     }),
     {
       name: "auth-storage",

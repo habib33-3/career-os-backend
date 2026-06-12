@@ -1,13 +1,16 @@
 import createAuthRefreshInterceptor from "axios-auth-refresh";
 
+import { useAuthStore } from "@/stores/useAuthStore";
+
 import type { ApiResponse } from "@/type/type";
 
 import { createApiClient } from "./core";
 import { publicApi } from "./public";
 
+export const privateApi = createApiClient();
+
 /**
- * Central auth failure hook
- * (logout store, redirect to sign-in, etc.)
+ * single handler (set once at app bootstrap)
  */
 let onAuthFailure: (() => void) | null = null;
 
@@ -16,81 +19,70 @@ export const setAuthFailureHandler = (fn: () => void) => {
 };
 
 /**
- * Private API instance
+ * prevent multiple refresh calls
  */
-export const privateApi = createApiClient();
+let isRefreshing = false;
+let queue: Array<() => void> = [];
 
-/**
- * Logout API
- * Uses publicApi to avoid interceptor loops.
- */
+const processQueue = () => {
+  queue.forEach((cb) => cb());
+  queue = [];
+};
+
 const logoutApi = async () => {
   try {
     await publicApi.post<ApiResponse<{ message: string }>>("/auth/logout", {});
   } catch {
-    // Ignore logout failures
+    // ignore
   }
 };
 
-/**
- * Refresh token logic
- */
 const refreshAuthLogic = async () => {
+  if (isRefreshing) {
+    return new Promise<void>((resolve) => {
+      queue.push(() => resolve());
+    });
+  }
+
+  isRefreshing = true;
+
   try {
     await publicApi.post("/auth/refresh", {}, {});
-
+    processQueue();
     return Promise.resolve();
   } catch (error) {
     await logoutApi();
 
+    useAuthStore.getState().clearUser();
     onAuthFailure?.();
 
     return Promise.reject(error);
+  } finally {
+    isRefreshing = false;
   }
 };
 
-/**
- * Automatically:
- * - detects 401
- * - refreshes token
- * - retries failed requests
- */
 createAuthRefreshInterceptor(privateApi, refreshAuthLogic, {
   statusCodes: [401],
 });
 
-/**
- * Global response interceptor
- */
 privateApi.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   (error) => {
-    const status = error?.response?.status;
-
-    // Let axios-auth-refresh handle 401s
-    if (status === 401) {
-      return Promise.reject(error);
-    }
-
-    // Network errors
     if (!error.response) {
       return Promise.reject({
         message: error.message || "Network error",
         status: 0,
-        data: null,
       });
     }
 
-    // API errors
     return Promise.reject({
       message:
         error?.response?.data?.message ??
         error?.response?.data?.error ??
         "Request failed",
-      status,
-      data: error?.response?.data,
+      status: error.response.status,
+      data: error.response.data,
     });
   }
 );
-
-export default privateApi;
