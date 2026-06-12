@@ -1,12 +1,17 @@
 import { Menu } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { useAuthStore } from "@/stores/useAuthStore";
+
+import Logo from "../shared/Logo";
+import ThemeToggle from "../shared/ThemeToggle";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import Logo from "./Logo";
 import SidebarContent from "./SidebarContent";
 
 function Navbar() {
+  const { user } = useAuthStore();
+
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-background px-3 md:px-4">
       {/* LEFT */}
@@ -37,12 +42,18 @@ function Navbar() {
 
       {/* RIGHT */}
       <div className="flex items-center gap-2">
-        <Avatar className="h-8 w-8">
+        <Avatar className="size-8">
+          <AvatarImage
+            src={user?.image}
+            alt={`${user?.name}'s profile picture`}
+            className="grayscale"
+          />
           <AvatarFallback className="bg-muted text-muted-foreground">
-            HR
+            {user?.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
       </div>
+      <ThemeToggle />
     </header>
   );
 }

@@ -5,6 +5,7 @@ import { privateApi } from "@/lib/axios/private";
 import { getErrorMessage } from "@/lib/utils";
 
 import { useAuthStore } from "@/stores/useAuthStore";
+
 import type { ApiResponse } from "@/type/type";
 
 const logoutApi = async () => {

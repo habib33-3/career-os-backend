@@ -6,17 +6,26 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getErrorMessage = (error: unknown, fallback?: string): string => {
-  // Axios error
+export const getErrorMessage = (
+  error: unknown,
+  fallback = "Something went wrong"
+): string => {
   if (error instanceof AxiosError) {
-    return error.response?.data?.message || error.message || "Request failed";
+    return error.response?.data?.message ?? error.message;
   }
 
-  // Normal JS error
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message === "string"
+  ) {
+    return error.message;
+  }
+
   if (error instanceof Error) {
     return error.message;
   }
 
-  // Fallback
-  return fallback || "Something went wrong";
+  return fallback;
 };

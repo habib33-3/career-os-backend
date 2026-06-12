@@ -29,6 +29,7 @@ export default {
     "^@/providers/(.*)$",
     "^@/features/(.*)$",
     "^@/shared/(.*)$",
+    "^@/stores/(.*)$",
     "^@/(.*)$",
 
     "^[./]",
