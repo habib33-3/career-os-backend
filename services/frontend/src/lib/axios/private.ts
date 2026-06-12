@@ -1,48 +1,88 @@
-import { createApiClient } from "./core";
+import createAuthRefreshInterceptor from "axios-auth-refresh";
 
+import { useAuthStore } from "@/stores/useAuthStore";
+
+import type { ApiResponse } from "@/type/type";
+
+import { createApiClient } from "./core";
+import { publicApi } from "./public";
+
+export const privateApi = createApiClient();
+
+/**
+ * single handler (set once at app bootstrap)
+ */
 let onAuthFailure: (() => void) | null = null;
 
 export const setAuthFailureHandler = (fn: () => void) => {
   onAuthFailure = fn;
 };
 
-export const privateApi = createApiClient();
+/**
+ * prevent multiple refresh calls
+ */
+let isRefreshing = false;
+let queue: Array<() => void> = [];
 
-// Request interceptor (future token hook)
-privateApi.interceptors.request.use((config) => {
-  // TODO: implement token retrieval logic with zustand
-  const token = null; // later: zustand / cookie / storage
+const processQueue = () => {
+  queue.forEach((cb) => cb());
+  queue = [];
+};
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+const logoutApi = async () => {
+  try {
+    await publicApi.post<ApiResponse<{ message: string }>>("/auth/logout", {});
+  } catch {
+    // ignore
+  }
+};
+
+const refreshAuthLogic = async () => {
+  if (isRefreshing) {
+    return new Promise<void>((resolve) => {
+      queue.push(() => resolve());
+    });
   }
 
-  return config;
+  isRefreshing = true;
+
+  try {
+    await publicApi.post("/auth/refresh", {}, {});
+    processQueue();
+    return Promise.resolve();
+  } catch (error) {
+    await logoutApi();
+
+    useAuthStore.getState().clearUser();
+    onAuthFailure?.();
+
+    return Promise.reject(error);
+  } finally {
+    isRefreshing = false;
+  }
+};
+
+createAuthRefreshInterceptor(privateApi, refreshAuthLogic, {
+  statusCodes: [401],
 });
 
 privateApi.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   (error) => {
-    const status = error?.response?.status;
-
-    if (status === 401 || status === 403) {
-      // central auth failure hook
-      onAuthFailure?.();
-    }
-
-    // Handle network errors and other non-response errors
     if (!error.response) {
       return Promise.reject({
         message: error.message || "Network error",
         status: 0,
-        data: null,
       });
     }
 
     return Promise.reject({
-      message: error?.response?.data?.message || "Authentication error",
-      status,
-      data: error?.response?.data,
+      message:
+        error?.response?.data?.message ??
+        error?.response?.data?.error ??
+        "Request failed",
+      status: error.response.status,
+      data: error.response.data,
     });
   }
 );
