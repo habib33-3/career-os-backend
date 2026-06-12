@@ -13,6 +13,7 @@ import { hashPassword, verifyPassword } from "@/common/security/password";
 
 import { PrismaService } from "@/infra/db/prisma/prisma.service";
 import { AppCache } from "@/infra/db/redis/app-cache.service";
+import { userCacheKeyWithEmail } from "@/infra/db/redis/cache-key";
 
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -54,6 +55,18 @@ export class AuthService {
     }
 
     async validateUser(email: string) {
+        const key = userCacheKeyWithEmail(email);
+
+        const cachedUser = await this.cache.get<{
+            id: string;
+            email: string;
+            role: string;
+        }>(key);
+
+        if (cachedUser) {
+            return cachedUser;
+        }
+
         const user = await this.prisma.user.findUnique({
             where: {
                 email,
@@ -66,8 +79,10 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new UnauthorizedException("Wrong credentials");
+            throw new UnauthorizedException("Wrong credentials ");
         }
+
+        await this.cache.set(key, user);
 
         return user;
     }
