@@ -79,7 +79,7 @@ export class AuthService {
         });
 
         if (!user) {
-            throw new UnauthorizedException("Wrong credentials ");
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         await this.cache.set(key, user);
@@ -174,13 +174,15 @@ export class AuthService {
             env.REFRESH_TOKEN_EXPIRES
         );
 
+        const { password, ...userWithoutPassword } = user;
+
         return {
             message: "Login successful",
             token: {
                 accessToken,
                 refreshToken,
             },
-            user,
+            user: userWithoutPassword,
         };
     }
 

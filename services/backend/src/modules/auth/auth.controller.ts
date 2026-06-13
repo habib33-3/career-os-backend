@@ -100,7 +100,11 @@ export class AuthController {
 
         return {
             message: result.message,
-            data: result.user,
+            data: {
+                accessToken: result.token.accessToken,
+                refreshToken: result.token.refreshToken,
+                user: result.user,
+            },
         };
     }
 

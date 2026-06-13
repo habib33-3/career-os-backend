@@ -12,6 +12,7 @@ import { PrismaModule } from "./infra/db/prisma/prisma.module";
 import { RedisModule } from "./infra/db/redis/redis.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { AccessTokenAuthGuard } from "./modules/auth/guard/access-token.guard";
+import { SourceModule } from "./modules/source/source.module";
 
 @Module({
     controllers: [AppController],
@@ -38,6 +39,7 @@ import { AccessTokenAuthGuard } from "./modules/auth/guard/access-token.guard";
         AuthModule,
         PrismaModule,
         RedisModule,
+        SourceModule,
     ],
     providers: [
         AppService,
