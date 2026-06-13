@@ -38,6 +38,23 @@ export const setupSwagger = (app: INestApplication) => {
             persistAuthorization: true, // Keep auth after reload
             showExtensions: false, // Optional: hide x-* extensions for cleaner UI
             withCredentials: true, // Only enable if using cookie/session auth
+            // Ensure fetch/XHR include cookies when running requests from Swagger UI
+            requestInterceptor: (req) => {
+                // For fetch-based requests
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore - swagger-ui's req type is loose here
+                if (typeof req === "object") {
+                    // Some environments use `fetch` where `credentials` is required
+                    // and others use XHR where `withCredentials` is used (handled by withCredentials)
+                    try {
+                        req.credentials = "include";
+                    } catch (_e) {
+                        // ignore
+                    }
+                }
+
+                return req;
+            },
         },
     });
 };
