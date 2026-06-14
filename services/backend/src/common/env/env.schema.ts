@@ -60,4 +60,7 @@ export const envSchema = z.object({
         .preprocess((val) => val === "true" || val === true, z.boolean())
         .default(false),
     SMTP_USER: z.string(),
+    CLOUDINARY_CLOUD_NAME: z.string(),
+    CLOUDINARY_API_KEY: z.string(),
+    CLOUDINARY_API_SECRET: z.string(),
 });

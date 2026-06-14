@@ -37,4 +37,12 @@ export class CreateSourceDto {
     @IsString()
     @MaxLength(500)
     description?: string;
+
+    @IsOptional()
+    @ApiPropertyOptional({
+        type: "string",
+        format: "binary",
+        description: "Optional logo image file for the source (e.g., PNG, JPG)",
+    })
+    file?: Express.Multer.File;
 }

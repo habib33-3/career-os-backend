@@ -7,6 +7,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { env } from "./common/env/env";
 import { validateEnv } from "./common/env/env.validation";
+import { UploadFileModule } from "./common/upload/upload-file.module";
 import { AppLoggerModule } from "./infra/app-logger/app-logger.module";
 import { PrismaModule } from "./infra/db/prisma/prisma.module";
 import { RedisModule } from "./infra/db/redis/redis.module";
@@ -40,6 +41,7 @@ import { SourceModule } from "./modules/source/source.module";
         PrismaModule,
         RedisModule,
         SourceModule,
+        UploadFileModule,
     ],
     providers: [
         AppService,
