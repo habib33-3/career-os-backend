@@ -10,5 +10,20 @@ export const userCacheKeyWithEmail = (email: string) =>
 export const userCacheKeyWithId = (id: string) => withPrefix("user", "id", id);
 
 // source
-export const sourceListWithUserId = (userId: string) =>
-    withPrefix("source", "list", userId);
+export const sourceListWithUserId = (
+    userId: string,
+    cursorId?: string,
+    search?: string,
+    limit = 20
+) =>
+    withPrefix(
+        "source",
+        "list",
+        userId,
+        cursorId || "null",
+        search || "null",
+        limit.toString()
+    );
+
+export const sourceItemWithId = (id: string, userId: string) =>
+    withPrefix("source", id, userId);

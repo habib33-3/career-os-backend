@@ -1,5 +1,14 @@
-import { Body, Controller, Post, UploadedFile } from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    ParseIntPipe,
+    Post,
+    Query,
+    UploadedFile,
+} from "@nestjs/common";
+import { ApiOperation, ApiParam, ApiQuery } from "@nestjs/swagger";
 
 import { CurrentUser } from "@/common/decorators/auth/current-user.decorator";
 import { UploadSingleFile } from "@/common/decorators/upload.decorator";
@@ -11,7 +20,7 @@ import { SourceService } from "./source.service";
 export class SourceController {
     constructor(private readonly sourceService: SourceService) {}
 
-    @Post("create")
+    @Post("")
     @ApiOperation({
         summary: "Create a new source for the authenticated user",
         description:
@@ -24,5 +33,43 @@ export class SourceController {
         @UploadedFile() file?: Express.Multer.File
     ) {
         return this.sourceService.createSource(userId, payload, file);
+    }
+
+    @Get("")
+    @ApiOperation({
+        summary: "Get all sources for the authenticated user",
+        description:
+            "Retrieves a list of sources linked to the authenticated user. Supports pagination and search functionality.",
+    })
+    @ApiQuery({ name: "cursorId", required: false, type: String })
+    @ApiQuery({ name: "search", required: false, type: String })
+    @ApiQuery({ name: "limit", required: false, type: Number })
+    async getAllMySources(
+        @CurrentUser("sub") userId: string,
+        @Query("cursorId") cursorId?: string,
+        @Query("search") search?: string,
+        @Query("limit", new ParseIntPipe({ optional: true }))
+        limit?: number
+    ) {
+        return this.sourceService.getAllMySources(
+            userId,
+            cursorId,
+            search,
+            limit ?? 20
+        );
+    }
+
+    @Get(":id")
+    @ApiOperation({
+        summary: "Get a source by ID for the authenticated user",
+        description:
+            "Retrieves a source linked to the authenticated user by its ID.",
+    })
+    @ApiParam({ name: "id", required: true, type: String })
+    async getSourceById(
+        @CurrentUser("sub") userId: string,
+        @Param("id") id: string
+    ) {
+        return this.sourceService.getSourceById(id, userId);
     }
 }
