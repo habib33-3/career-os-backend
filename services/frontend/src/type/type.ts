@@ -3,7 +3,10 @@ export type CursorMeta = {
   hasNext: boolean;
 };
 
-export type ApiMeta = CursorMeta | Record<string, unknown>;
+export type ApiMeta = {
+  nextCursor?: string | null;
+  hasNext?: boolean;
+} & Record<string, unknown>;
 
 export type ApiResponse<T> = {
   success: boolean;
@@ -37,4 +40,12 @@ export type User = {
   email: string;
   image: string;
   role: "USER" | "ADMIN";
+};
+
+export type Source = {
+  id: string;
+  name: string;
+  url: string;
+  description?: string;
+  logoUrl?: string;
 };

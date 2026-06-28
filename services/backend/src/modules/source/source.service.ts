@@ -127,8 +127,13 @@ export class SourceService {
             : null;
 
         const result = {
-            sources: paginatedSources,
-            nextCursor,
+            data: paginatedSources,
+            meta: {
+                cursor: {
+                    nextCursor,
+                    hasNext: hasNextPage,
+                },
+            },
         };
 
         // 5. cache result (add TTL if your cache supports it)
