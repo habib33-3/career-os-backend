@@ -4,6 +4,7 @@ export type CursorMeta = {
 };
 
 export type ApiMeta = {
+  cursor?: CursorMeta;
   nextCursor?: string | null;
   hasNext?: boolean;
 } & Record<string, unknown>;
@@ -47,5 +48,5 @@ export type Source = {
   name: string;
   url: string;
   description?: string;
-  logoUrl?: string;
+  logoUrl?: string | null;
 };

@@ -7,13 +7,12 @@ import SourceCard from "./SourceCard";
 
 const SourceCards = () => {
   const { isLoading, sources } = useGetAllSource();
-  console.log("🚀 ~ SourceCards ~ sources:", sources);
 
   if (isLoading) {
     return <PageLoading />;
   }
 
-  if (!sources.length) {
+  if (sources && sources.length === 0) {
     return (
       <div className="flex h-40 items-center justify-center rounded-lg border border-dashed">
         <p className="text-sm text-muted-foreground">No sources found.</p>

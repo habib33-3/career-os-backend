@@ -5,23 +5,18 @@ import { privateApi } from "@/lib/axios/private";
 
 import type { ApiResponse, Source } from "@/type/type";
 
-type SourceList = {
-  sources: Source[];
-  nextCursor: string | null;
-};
-
 const getAllSourceApi = async (
   search?: string,
   cursorId?: string,
   limit = 10
-): Promise<ApiResponse<SourceList>> => {
+): Promise<ApiResponse<Source[]>> => {
   const params = new URLSearchParams();
 
   if (search) params.append("search", search);
   if (cursorId) params.append("cursorId", cursorId);
   params.append("limit", String(limit));
 
-  const res = await privateApi.get<ApiResponse<SourceList>>(
+  const res = await privateApi.get<ApiResponse<Source[]>>(
     `/source?${params.toString()}`
   );
 
@@ -36,9 +31,9 @@ const useGetAllSource = () => {
   const limit = 10;
 
   const query = useInfiniteQuery<
-    ApiResponse<SourceList>,
+    ApiResponse<Source[]>,
     Error,
-    InfiniteData<ApiResponse<SourceList>>,
+    InfiniteData<ApiResponse<Source[]>>,
     string[],
     string | undefined
   >({
@@ -49,10 +44,11 @@ const useGetAllSource = () => {
 
     initialPageParam: undefined,
 
-    getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? undefined,
+    getNextPageParam: (lastPage) =>
+      lastPage?.meta?.cursor?.nextCursor ?? undefined,
   });
 
-  const sources = query.data?.pages.flatMap((page) => page.data.sources) ?? [];
+  const sources = query.data?.pages.flatMap((page) => page.data ?? []) ?? [];
 
   return {
     sources,

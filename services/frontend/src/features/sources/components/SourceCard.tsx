@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 type Props = {
   id: string;
   name: string;
-  logoUrl?: string;
+  logoUrl?: string | null;
 };
 
 const SourceCard = ({ id, name, logoUrl }: Props) => {
@@ -16,7 +16,7 @@ const SourceCard = ({ id, name, logoUrl }: Props) => {
         <CardHeader className="flex flex-row items-center gap-4 space-y-0">
           <Avatar className="size-12 rounded-lg">
             <AvatarImage
-              src={logoUrl}
+              src={logoUrl ?? undefined}
               alt={`${name} logo`}
             />
             <AvatarFallback className="rounded-lg text-base font-semibold">

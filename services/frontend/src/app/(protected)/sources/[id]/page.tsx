@@ -1,7 +1,5 @@
-import React from "react";
-
-const SourceDetailsPage = () => {
-  return <div></div>;
+const SourceDetailsPage = async (params: Promise<{ id: string }>) => {
+  return;
 };
 
 export default SourceDetailsPage;
