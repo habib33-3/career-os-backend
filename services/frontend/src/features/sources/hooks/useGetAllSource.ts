@@ -28,7 +28,7 @@ const useGetAllSource = () => {
     defaultValue: "",
   });
 
-  const limit = 10;
+  const limit = 20;
 
   const query = useInfiniteQuery<
     ApiResponse<Source[]>,

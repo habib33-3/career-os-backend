@@ -1,9 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import Image from "next/image";
+
+import { UploadIcon, XIcon } from "lucide-react";
 import { Controller } from "react-hook-form";
 
+import {
+  Attachment,
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentDescription,
+  AttachmentMedia,
+  AttachmentTitle,
+} from "@/components/ui/attachment";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -25,7 +37,19 @@ type Props = {
 const CreateSourceForm = ({ onSuccess }: Props) => {
   const [image, setImage] = useState<File>();
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const { form, onSubmit, loading } = useCreateSource();
+
+  const previewUrl = useMemo(() => {
+    return image ? URL.createObjectURL(image) : null;
+  }, [image]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
   const submit = async (data: Parameters<typeof onSubmit>[0]) => {
     await onSubmit(data, image);
@@ -109,15 +133,64 @@ const CreateSourceForm = ({ onSuccess }: Props) => {
         />
 
         <Field>
-          <FieldLabel htmlFor="logo">Logo</FieldLabel>
+          <FieldLabel>Logo</FieldLabel>
 
           <FieldContent>
-            <Input
-              id="logo"
+            <input
+              ref={inputRef}
               type="file"
               accept="image/*"
+              className="hidden"
               onChange={(e) => setImage(e.target.files?.[0])}
             />
+
+            {!image ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => inputRef.current?.click()}
+              >
+                <UploadIcon className="mr-2 size-4" />
+                Choose Logo
+              </Button>
+            ) : (
+              <Attachment>
+                <AttachmentMedia>
+                  {previewUrl && (
+                    <Image
+                      src={previewUrl}
+                      alt="Logo preview"
+                      width={48}
+                      height={48}
+                      className="rounded-md object-cover"
+                      unoptimized
+                    />
+                  )}
+                </AttachmentMedia>
+
+                <AttachmentContent>
+                  <AttachmentTitle>{image.name}</AttachmentTitle>
+                  <AttachmentDescription>
+                    {(image.size / 1024).toFixed(1)} KB
+                  </AttachmentDescription>
+                </AttachmentContent>
+
+                <AttachmentActions>
+                  <AttachmentAction
+                    aria-label="Remove logo"
+                    onClick={() => {
+                      setImage(undefined);
+
+                      if (inputRef.current) {
+                        inputRef.current.value = "";
+                      }
+                    }}
+                  >
+                    <XIcon />
+                  </AttachmentAction>
+                </AttachmentActions>
+              </Attachment>
+            )}
 
             <FieldDescription>Optional logo image.</FieldDescription>
           </FieldContent>
