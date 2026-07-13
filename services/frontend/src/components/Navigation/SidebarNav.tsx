@@ -5,10 +5,12 @@ import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
+// TODO: Add logo for all
+
 const items = [
   { name: "Job Applications", path: "/job-applications" },
   { name: "Companies", path: "/companies" },
-  { name: "Interviews", path: "/interviews" },
+  { name: "Sources", path: "/sources" },
 ];
 
 const SidebarNav = () => {

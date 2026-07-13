@@ -69,13 +69,13 @@ const CreateSourceForm = ({ onSuccess }: Props) => {
           name="name"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+              <FieldLabel htmlFor={field.name}>Source Name</FieldLabel>
 
               <FieldContent>
                 <Input
                   {...field}
                   id={field.name}
-                  placeholder="Medium"
+                  placeholder="LinkedIn Jobs"
                   aria-invalid={fieldState.invalid}
                 />
 
@@ -96,12 +96,13 @@ const CreateSourceForm = ({ onSuccess }: Props) => {
                 <Input
                   {...field}
                   id={field.name}
-                  placeholder="https://medium.com"
+                  placeholder="https://www.linkedin.com/jobs"
                   aria-invalid={fieldState.invalid}
                 />
 
                 <FieldDescription>
-                  The website URL of the source.
+                  The URL of the company careers page, job board, or recruitment
+                  website.
                 </FieldDescription>
 
                 <FieldError errors={[fieldState.error]} />
@@ -121,19 +122,24 @@ const CreateSourceForm = ({ onSuccess }: Props) => {
                 <Textarea
                   {...field}
                   id={field.name}
-                  placeholder="Short description..."
+                  placeholder="Optional notes about this job source..."
                   rows={4}
                   aria-invalid={fieldState.invalid}
                 />
 
                 <FieldError errors={[fieldState.error]} />
+
+                <FieldDescription>
+                  Add notes such as the types of roles, industries, or companies
+                  you use this source for.
+                </FieldDescription>
               </FieldContent>
             </Field>
           )}
         />
 
         <Field>
-          <FieldLabel>Logo</FieldLabel>
+          <FieldLabel>Source Logo</FieldLabel>
 
           <FieldContent>
             <input
@@ -192,7 +198,9 @@ const CreateSourceForm = ({ onSuccess }: Props) => {
               </Attachment>
             )}
 
-            <FieldDescription>Optional logo image.</FieldDescription>
+            <FieldDescription>
+              Upload an optional logo to help identify this job source.
+            </FieldDescription>
           </FieldContent>
         </Field>
       </FieldGroup>
@@ -202,7 +210,7 @@ const CreateSourceForm = ({ onSuccess }: Props) => {
         className="w-full"
         disabled={loading}
       >
-        {loading ? "Creating..." : "Create Source"}
+        {loading ? "Creating..." : "Add Source"}
       </Button>
     </form>
   );

@@ -5,7 +5,8 @@ import CreateSourceDialog from "@/features/sources/components/create-source/Crea
 
 export const metadata: Metadata = {
   title: "Sources",
-  description: "Browse and manage your saved content sources.",
+  description:
+    "Manage the job sources you use to discover and track opportunities.",
 };
 
 const SourcesPage = () => {
@@ -16,8 +17,9 @@ const SourcesPage = () => {
           <h1 className="text-3xl font-bold tracking-tight">Sources</h1>
 
           <p className="max-w-2xl text-muted-foreground">
-            Organize websites, blogs, documentation, and other resources you
-            want to track. Create a source to start collecting content.
+            Manage the websites, company career pages, job boards, and recruiter
+            links where you discover opportunities. Add a source to keep your
+            job applications organized.
           </p>
         </div>
 
