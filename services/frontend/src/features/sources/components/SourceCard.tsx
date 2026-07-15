@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 type Props = {
   id: string;
@@ -10,28 +10,31 @@ type Props = {
 };
 
 const SourceCard = ({ id, name, logoUrl }: Props) => {
+  const initials = name
+    .split(" ")
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+
   return (
-    <Card className="transition-all hover:border-primary/40 hover:bg-accent/40 hover:shadow-sm">
+    <Card className="transition-all duration-200 focus-within:ring-2 focus-within:ring-primary hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
       <Link href={`/sources/${id}`}>
-        <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+        <CardHeader className="flex flex-row items-center gap-4">
           <Avatar className="size-12 rounded-lg">
             <AvatarImage
               src={logoUrl ?? undefined}
               alt={`${name} logo`}
             />
-            <AvatarFallback className="rounded-lg text-base font-semibold">
-              {name?.charAt(0).toUpperCase()}
+            <AvatarFallback className="rounded-lg bg-primary/10 font-semibold text-primary">
+              {initials}
             </AvatarFallback>
           </Avatar>
 
-          <div className="min-w-0 flex-1">
-            <CardTitle className="truncate text-base">{name}</CardTitle>
-          </div>
+          <CardTitle className="line-clamp-2 text-base leading-snug">
+            {name}
+          </CardTitle>
         </CardHeader>
-
-        <CardContent className="pt-0">
-          <p className="text-sm text-muted-foreground">Source</p>
-        </CardContent>
       </Link>
     </Card>
   );

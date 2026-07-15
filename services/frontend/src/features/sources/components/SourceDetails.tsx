@@ -12,7 +12,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -24,6 +23,22 @@ type Props = {
   id: string;
 };
 
+const InfoRow = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) => (
+  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+    <div className="sm:max-w-45">
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+    </div>
+
+    <div className="flex-1">{children}</div>
+  </div>
+);
+
 const SourceDetails = ({ id }: Props) => {
   const { data: source, status } = useGetSingleSource(id);
 
@@ -34,57 +49,81 @@ const SourceDetails = ({ id }: Props) => {
   if (status === "error" || !source) {
     return (
       <ErrorState
-        title=""
-        description=""
+        title="Source not found"
+        description="The source does not exist or you don't have permission to view it."
       />
     );
   }
 
+  const initials = source.name
+    .split(" ")
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+
+  const hostname = (() => {
+    try {
+      return new URL(source.url).hostname.replace("www.", "");
+    } catch {
+      return source.url;
+    }
+  })();
+
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6">
+      <Button
+        variant="ghost"
+        asChild
+        className="px-0"
+      >
+        <Link href="/sources">
+          <ArrowLeft className="mr-2 size-4" />
+          Back to Sources
+        </Link>
+      </Button>
+
       {/* Header */}
 
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          asChild
-        >
-          <Link href="/sources">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Link>
-        </Button>
-
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </Button>
-
-          <Button variant="destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </Button>
-        </div>
-      </div>
-
-      {/* Profile */}
-
       <Card>
-        <CardContent className="flex items-center gap-6 pt-6">
-          <Avatar className="h-20 w-20">
-            <AvatarImage src={source.logoUrl || ""} />
-            <AvatarFallback className="text-2xl">
-              {source.name[0]}
-            </AvatarFallback>
-          </Avatar>
+        <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-5">
+            <Avatar className="size-24 rounded-xl">
+              <AvatarImage src={source.logoUrl ?? ""} />
+              <AvatarFallback className="rounded-xl text-2xl font-semibold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
 
-          <div>
-            <h1 className="text-3xl font-bold">{source.name}</h1>
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tight">
+                {source.name}
+              </h1>
 
-            <p className="mt-2 text-muted-foreground">
-              {source.description || "No description provided."}
-            </p>
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Globe className="size-4" />
+                {hostname}
+
+                <ExternalLink className="size-3" />
+              </a>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button variant="outline">
+              <Pencil className="mr-2 size-4" />
+              Edit
+            </Button>
+
+            <Button variant="destructive">
+              <Trash2 className="mr-2 size-4" />
+              Delete
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -94,53 +133,51 @@ const SourceDetails = ({ id }: Props) => {
       <Card>
         <CardHeader>
           <CardTitle>Information</CardTitle>
+
           <CardDescription>
-            Basic information about this source.
+            Details about this application source.
           </CardDescription>
         </CardHeader>
 
         <Separator />
 
-        <CardContent className="space-y-6 pt-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Website</p>
-
+        <CardContent className="space-y-6 p-6">
+          <InfoRow label="Website">
+            <div className="flex items-center justify-between gap-4">
               <a
                 href={source.url}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-1 flex items-center gap-2 font-medium hover:underline"
+                className="flex items-center gap-2 font-medium hover:underline"
               >
-                <Globe className="h-4 w-4" />
-                {source.url}
+                <Globe className="size-4" />
+                {hostname}
               </a>
+
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+              >
+                <a
+                  href={source.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open
+                  <ExternalLink className="ml-2 size-4" />
+                </a>
+              </Button>
             </div>
-
-            <Button
-              variant="outline"
-              asChild
-            >
-              <a
-                href={source.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-          </div>
+          </InfoRow>
 
           <Separator />
 
-          <div>
-            <p className="text-sm text-muted-foreground">Description</p>
-
-            <p className="mt-1">
-              {source.description || "No description available."}
+          <InfoRow label="Description">
+            <p className="leading-7 text-muted-foreground">
+              {source.description || "No description provided."}
             </p>
-          </div>
+          </InfoRow>
         </CardContent>
       </Card>
     </div>

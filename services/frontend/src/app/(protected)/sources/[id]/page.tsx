@@ -1,3 +1,5 @@
+import { type Metadata } from "next";
+
 import SourceDetails from "@/features/sources/components/SourceDetails";
 
 interface Props {
@@ -5,6 +7,10 @@ interface Props {
     id: string;
   }>;
 }
+
+export const metadata: Metadata = {
+  title: "Source",
+};
 
 const SourceDetailsPage = async ({ params }: Props) => {
   const { id } = await params;
