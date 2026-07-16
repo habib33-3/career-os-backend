@@ -6,6 +6,7 @@ import {
 
 import { UploadFileService } from "@/common/upload/upload-file.service";
 
+import { AppLoggerService } from "@/infra/app-logger/app-logger.service";
 import { PrismaService } from "@/infra/db/prisma/prisma.service";
 import { AppCache } from "@/infra/db/redis/app-cache.service";
 import {
@@ -16,13 +17,15 @@ import {
 import { Prisma, Source } from "@/generated/prisma/client";
 
 import { CreateSourceDto } from "./dto/create-source.dto";
+import { UpdateSourceDto } from "./dto/update-source.dto";
 
 @Injectable()
 export class SourceService {
     constructor(
         private readonly prisma: PrismaService,
         private readonly cache: AppCache,
-        private readonly uploadService: UploadFileService
+        private readonly uploadService: UploadFileService,
+        private readonly logger: AppLoggerService
     ) {}
 
     async createSource(
@@ -176,5 +179,98 @@ export class SourceService {
         });
 
         return source;
+    }
+
+    async updateSource(
+        id: string,
+        userId: string,
+        payload: UpdateSourceDto,
+        file?: Express.Multer.File
+    ) {
+        const source = await this.getSourceById(id, userId);
+
+        let uploaded:
+            | {
+                  url: string;
+              }
+            | undefined;
+
+        if (file) {
+            uploaded = await this.uploadService.uploadFile(file, "source");
+        }
+
+        try {
+            const updatedSource = await this.prisma.$transaction(async (tx) => {
+                const updateData: Prisma.SourceUpdateInput = {
+                    ...payload,
+                };
+
+                if (uploaded) {
+                    updateData.logoUrl = uploaded.url;
+                }
+
+                return tx.source.update({
+                    where: { id },
+                    data: updateData,
+                });
+            });
+
+            if (!source) {
+                throw new NotFoundException("Source not found");
+            }
+
+            // Best-effort cleanup
+            if (uploaded && source.logoUrl) {
+                this.uploadService.deleteFile(source.logoUrl).catch((err) => {
+                    this.logger.error("Failed to delete old source logo:", err);
+                });
+            }
+
+            await Promise.all([
+                this.cache.invalidate(sourceListWithUserId(userId)),
+                this.cache.invalidate(sourceItemWithId(id, userId)),
+            ]);
+
+            return updatedSource;
+        } catch (error) {
+            // Roll back newly uploaded image
+            if (uploaded) {
+                await this.uploadService.deleteFile(uploaded.url).catch(() => {
+                    this.logger.error("Failed to delete uploaded source logo.");
+                });
+            }
+
+            if (
+                error instanceof Prisma.PrismaClientKnownRequestError &&
+                error.code === "P2002"
+            ) {
+                throw new ConflictException(
+                    "A source with this URL already exists."
+                );
+            }
+
+            throw error;
+        }
+    }
+
+    async deleteSource(id: string, userId: string) {
+        const source = await this.getSourceById(id, userId);
+
+        if (!source) {
+            throw new NotFoundException("Source not found");
+        }
+
+        await this.prisma.source.delete({
+            where: { id },
+        });
+
+        await Promise.all([
+            this.cache.invalidate(sourceListWithUserId(userId)),
+            this.cache.invalidate(sourceItemWithId(id, userId)),
+        ]);
+
+        return {
+            message: "Source deleted successfully",
+        };
     }
 }

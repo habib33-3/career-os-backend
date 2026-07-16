@@ -1,9 +1,11 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     ParseIntPipe,
+    Patch,
     Post,
     Query,
     UploadedFile,
@@ -71,5 +73,46 @@ export class SourceController {
         @Param("id") id: string
     ) {
         return this.sourceService.getSourceById(id, userId);
+    }
+
+    @Patch(":id")
+    @ApiOperation({
+        summary: "Update a source by ID for the authenticated user",
+        description:
+            "Updates a source linked to the authenticated user by its ID.",
+    })
+    @ApiParam({
+        name: "id",
+        required: true,
+        type: String,
+        description: "Source ID",
+    })
+    @UploadSingleFile("file", "image")
+    async updateSource(
+        @CurrentUser("sub") userId: string,
+        @Param("id") id: string,
+        @Body() payload: CreateSourceDto,
+        @UploadedFile() file?: Express.Multer.File
+    ) {
+        return this.sourceService.updateSource(id, userId, payload, file);
+    }
+
+    @Delete(":id")
+    @ApiOperation({
+        summary: "Delete a source by ID for the authenticated user",
+        description:
+            "Deletes a source linked to the authenticated user by its ID.",
+    })
+    @ApiParam({
+        name: "id",
+        required: true,
+        type: String,
+        description: "Source ID",
+    })
+    async deleteSource(
+        @CurrentUser("sub") userId: string,
+        @Param("id") id: string
+    ) {
+        return this.sourceService.deleteSource(id, userId);
     }
 }

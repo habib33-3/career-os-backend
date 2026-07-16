@@ -12,6 +12,7 @@ model Source {
     updatedAt   DateTime @updatedAt
 
     @@unique([userId, name])
+    @@unique([userId, url])
     @@index([userId])
     
 }

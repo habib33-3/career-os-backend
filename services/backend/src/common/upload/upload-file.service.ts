@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 
 import type { UploadApiResponse } from "cloudinary";
 
@@ -35,5 +35,36 @@ export class UploadFileService {
             publicId: result.public_id,
             resourceType: result.resource_type,
         };
+    }
+
+    private extractPublicId(url: string): string {
+        try {
+            const { pathname } = new URL(url);
+
+            const uploadIndex = pathname.indexOf("/upload/");
+            if (uploadIndex === -1) {
+                throw new BadRequestException("Invalid Cloudinary URL.");
+            }
+
+            let publicId = pathname.slice(uploadIndex + "/upload/".length);
+
+            // Remove version if present (v123456789/)
+            publicId = publicId.replace(/^v\d+\//, "");
+
+            // Remove extension
+            publicId = publicId.replace(/\.[^.]+$/, "");
+
+            return publicId;
+        } catch {
+            throw new BadRequestException("Invalid Cloudinary URL.");
+        }
+    }
+
+    async deleteFile(url: string): Promise<void> {
+        if (!url) return;
+
+        const publicId = this.extractPublicId(url);
+
+        await cloudinary.uploader.destroy(publicId);
     }
 }
