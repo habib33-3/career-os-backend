@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { ArrowLeft, ExternalLink, Globe, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, ExternalLink, Globe, Trash2 } from "lucide-react";
 
 import ErrorState from "@/components/shared/ErrorState";
 import PageLoading from "@/components/shared/loading/PageLoading";
@@ -18,6 +18,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { useGetSingleSource } from "../hooks/useGetSingleSource";
+import UpdateSourceDialog from "./update-source/UpdateSourceDialog";
 
 type Props = {
   id: string;
@@ -115,10 +116,7 @@ const SourceDetails = ({ id }: Props) => {
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline">
-              <Pencil className="mr-2 size-4" />
-              Edit
-            </Button>
+            <UpdateSourceDialog />
 
             <Button variant="destructive">
               <Trash2 className="mr-2 size-4" />
