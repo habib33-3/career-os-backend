@@ -20,8 +20,8 @@ export const sourceListWithUserId = (
         "source",
         "list",
         userId,
-        cursorId || "null",
-        search || "null",
+        cursorId !== undefined ? `c:${cursorId}` : "c:",
+        search !== undefined ? `s:${search}` : "s:",
         limit.toString()
     );
 

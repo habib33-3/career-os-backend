@@ -65,7 +65,9 @@ const UpdateSourceForm = ({ onSuccess }: Props) => {
 
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
     };
   }, [previewUrl]);
 
@@ -83,12 +85,17 @@ const UpdateSourceForm = ({ onSuccess }: Props) => {
     await onSubmit(data, image);
 
     setImage(undefined);
+
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+
     onSuccess?.();
   };
 
   return (
     <form
-      onSubmit={form.handleSubmit(submit)}
+      onSubmit={(e) => form.handleSubmit(submit)(e)}
       className="space-y-6"
     >
       <FieldGroup>
@@ -152,16 +159,22 @@ const UpdateSourceForm = ({ onSuccess }: Props) => {
         />
 
         <Field>
-          <FieldLabel>Source Logo</FieldLabel>
+          <FieldLabel htmlFor="source-logo">Source Logo</FieldLabel>
 
           <FieldContent>
             <input
+              id="source-logo"
               ref={inputRef}
               type="file"
-              hidden
+              className="sr-only"
               accept="image/*"
+              aria-describedby="source-logo-description"
               onChange={(e) => setImage(e.target.files?.[0])}
             />
+
+            <FieldDescription id="source-logo-description">
+              Upload a logo image for this source.
+            </FieldDescription>
 
             {!displayImage ? (
               <Button
@@ -169,7 +182,10 @@ const UpdateSourceForm = ({ onSuccess }: Props) => {
                 variant="outline"
                 onClick={() => inputRef.current?.click()}
               >
-                <UploadIcon className="mr-2 size-4" />
+                <UploadIcon
+                  aria-hidden="true"
+                  className="mr-2 size-4"
+                />
                 Choose Logo
               </Button>
             ) : (
@@ -177,7 +193,7 @@ const UpdateSourceForm = ({ onSuccess }: Props) => {
                 <AttachmentMedia>
                   <Image
                     src={displayImage}
-                    alt="Logo"
+                    alt={`${initialData.name} logo`}
                     width={48}
                     height={48}
                     className="rounded-md object-cover"
@@ -198,11 +214,17 @@ const UpdateSourceForm = ({ onSuccess }: Props) => {
                 </AttachmentContent>
 
                 <AttachmentActions>
-                  <AttachmentAction onClick={() => inputRef.current?.click()}>
-                    <UploadIcon />
+                  <AttachmentAction
+                    aria-label="Replace logo"
+                    title="Replace logo"
+                    onClick={() => inputRef.current?.click()}
+                  >
+                    <UploadIcon aria-hidden="true" />
                   </AttachmentAction>
 
                   <AttachmentAction
+                    aria-label="Remove selected logo"
+                    title="Remove selected logo"
                     onClick={() => {
                       setImage(undefined);
 
@@ -211,7 +233,7 @@ const UpdateSourceForm = ({ onSuccess }: Props) => {
                       }
                     }}
                   >
-                    <XIcon />
+                    <XIcon aria-hidden="true" />
                   </AttachmentAction>
                 </AttachmentActions>
               </Attachment>

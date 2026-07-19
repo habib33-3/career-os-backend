@@ -14,6 +14,5 @@ export const createApiClient = (config?: AxiosRequestConfig) => {
       "Content-Type": "application/json",
       ...config?.headers,
     },
-    ...config,
   });
 };

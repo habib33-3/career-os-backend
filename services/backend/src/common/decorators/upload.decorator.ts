@@ -6,6 +6,8 @@ import {
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { ApiConsumes } from "@nestjs/swagger";
 
+import { Request } from "express";
+
 import { memoryStorage } from "multer";
 
 export const storage = memoryStorage();
