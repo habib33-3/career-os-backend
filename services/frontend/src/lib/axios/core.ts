@@ -1,17 +1,19 @@
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 
-export const createApiClient = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  if (!apiUrl) {
-    throw new Error("NEXT_PUBLIC_API_URL environment variable is not defined");
-  }
+if (!apiUrl) {
+  throw new Error("NEXT_PUBLIC_API_URL environment variable is not defined");
+}
 
+export const createApiClient = (config?: AxiosRequestConfig) => {
   return axios.create({
     baseURL: apiUrl,
+    withCredentials: true,
     headers: {
       "Content-Type": "application/json",
+      ...config?.headers,
     },
-    withCredentials: true,
+    ...config,
   });
 };

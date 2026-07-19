@@ -61,7 +61,7 @@ export class SourceService {
         } catch (error) {
             if (error.code === "P2002") {
                 throw new ConflictException(
-                    "Source with this name already exists for the user"
+                    "Source with this name or url already exists for the user"
                 );
             }
             throw error;
@@ -189,40 +189,34 @@ export class SourceService {
     ) {
         const source = await this.getSourceById(id, userId);
 
-        let uploaded:
-            | {
-                  url: string;
-              }
-            | undefined;
+        if (!source) {
+            throw new NotFoundException("Source Not found");
+        }
+
+        let uploaded: { url: string } | undefined;
 
         if (file) {
             uploaded = await this.uploadService.uploadFile(file, "source");
         }
 
         try {
-            const updatedSource = await this.prisma.$transaction(async (tx) => {
-                const updateData: Prisma.SourceUpdateInput = {
-                    ...payload,
-                };
+            // Remove file from payload before passing to Prisma
+            const { file: _, ...sourceData } = payload;
 
-                if (uploaded) {
-                    updateData.logoUrl = uploaded.url;
-                }
-
-                return tx.source.update({
-                    where: { id },
-                    data: updateData,
-                });
+            const updatedSource = await this.prisma.source.update({
+                where: { id },
+                data: {
+                    ...sourceData,
+                    ...(uploaded && {
+                        logoUrl: uploaded.url,
+                    }),
+                },
             });
 
-            if (!source) {
-                throw new NotFoundException("Source not found");
-            }
-
-            // Best-effort cleanup
+            // Best-effort cleanup of old image
             if (uploaded && source.logoUrl) {
                 this.uploadService.deleteFile(source.logoUrl).catch((err) => {
-                    this.logger.error("Failed to delete old source logo:", err);
+                    this.logger.error("Failed to delete old source logo.", err);
                 });
             }
 
@@ -233,11 +227,16 @@ export class SourceService {
 
             return updatedSource;
         } catch (error) {
-            // Roll back newly uploaded image
+            // Roll back newly uploaded image if database update failed
             if (uploaded) {
-                await this.uploadService.deleteFile(uploaded.url).catch(() => {
-                    this.logger.error("Failed to delete uploaded source logo.");
-                });
+                await this.uploadService
+                    .deleteFile(uploaded.url)
+                    .catch((err) => {
+                        this.logger.error(
+                            "Failed to delete uploaded source logo.",
+                            err
+                        );
+                    });
             }
 
             if (
@@ -245,7 +244,7 @@ export class SourceService {
                 error.code === "P2002"
             ) {
                 throw new ConflictException(
-                    "A source with this URL already exists."
+                    "A source with this name or URL already exists."
                 );
             }
 

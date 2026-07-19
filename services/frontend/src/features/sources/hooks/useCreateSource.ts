@@ -35,7 +35,11 @@ const createSourceApi = async ({
     formData.append("file", image);
   }
 
-  const res = await privateApi.post<ApiResponse<Source>>("/source", formData);
+  const res = await privateApi.post<ApiResponse<Source>>("/source", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return res.data;
 };

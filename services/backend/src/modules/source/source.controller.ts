@@ -16,6 +16,7 @@ import { CurrentUser } from "@/common/decorators/auth/current-user.decorator";
 import { UploadSingleFile } from "@/common/decorators/upload.decorator";
 
 import { CreateSourceDto } from "./dto/create-source.dto";
+import { UpdateSourceDto } from "./dto/update-source.dto";
 import { SourceService } from "./source.service";
 
 @Controller("source")
@@ -91,7 +92,7 @@ export class SourceController {
     async updateSource(
         @CurrentUser("sub") userId: string,
         @Param("id") id: string,
-        @Body() payload: CreateSourceDto,
+        @Body() payload: UpdateSourceDto,
         @UploadedFile() file?: Express.Multer.File
     ) {
         return this.sourceService.updateSource(id, userId, payload, file);

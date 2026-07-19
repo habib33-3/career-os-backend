@@ -15,6 +15,7 @@ import { PrismaService } from "@/infra/db/prisma/prisma.service";
 import { AppCache } from "@/infra/db/redis/app-cache.service";
 import { userCacheKeyWithEmail } from "@/infra/db/redis/cache-key";
 
+import { userCacheKeyWithId } from "../../infra/db/redis/cache-key";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { generateAvatar } from "./util/generate-avatar";
@@ -89,7 +90,9 @@ export class AuthService {
 
     async register(payload: RegisterDto) {
         const userExists = await this.prisma.user.findUnique({
-            where: { email: payload.email },
+            where: {
+                email: payload.email,
+            },
         });
 
         if (userExists) {
@@ -97,7 +100,6 @@ export class AuthService {
         }
 
         const hashedPassword = await hashPassword(payload.password);
-
         const avatar = generateAvatar(payload.name);
 
         const user = await this.prisma.user.create({
@@ -113,21 +115,40 @@ export class AuthService {
                 role: true,
                 name: true,
                 image: true,
+                createdAt: true,
             },
         });
 
+        await Promise.all([
+            this.cache.set(userCacheKeyWithId(user.id), user),
+            this.cache.set(userCacheKeyWithEmail(user.email), {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+            }),
+        ]);
+
         const accessToken = this.generateToken(
-            { sub: user.id, email: user.email, role: user.role },
+            {
+                sub: user.id,
+                email: user.email,
+                role: user.role,
+            },
             "access"
         );
 
-        const refreshToken = this.generateToken({ sub: user.id }, "refresh");
+        const refreshToken = this.generateToken(
+            {
+                sub: user.id,
+            },
+            "refresh"
+        );
 
-        const hashed = await argon2.hash(refreshToken);
+        const hashedRefreshToken = await argon2.hash(refreshToken);
 
         await this.cache.set(
             `refresh:${user.id}`,
-            hashed,
+            hashedRefreshToken,
             env.REFRESH_TOKEN_EXPIRES
         );
 
@@ -143,38 +164,63 @@ export class AuthService {
 
     async login(payload: LoginDto) {
         const user = await this.prisma.user.findUnique({
-            where: { email: payload.email },
+            where: {
+                email: payload.email,
+            },
             select: {
                 id: true,
                 email: true,
                 role: true,
-                password: true,
+                name: true,
                 image: true,
+                createdAt: true,
+                password: true,
             },
         });
 
-        if (!user) throw new UnauthorizedException("Wrong credentials");
+        if (!user) {
+            throw new UnauthorizedException("Wrong credentials");
+        }
 
         const isMatch = await verifyPassword(payload.password, user.password);
-        if (!isMatch) throw new UnauthorizedException("Wrong credentials");
+
+        if (!isMatch) {
+            throw new UnauthorizedException("Wrong credentials");
+        }
 
         const accessToken = this.generateToken(
-            { sub: user.id, email: user.email, role: user.role },
+            {
+                sub: user.id,
+                email: user.email,
+                role: user.role,
+            },
             "access"
         );
 
-        const refreshToken = this.generateToken({ sub: user.id }, "refresh");
-
-        // store hashed refresh token
-        const hashed = await argon2.hash(refreshToken);
-
-        await this.cache.set(
-            `refresh:${user.id}`,
-            hashed,
-            env.REFRESH_TOKEN_EXPIRES
+        const refreshToken = this.generateToken(
+            {
+                sub: user.id,
+            },
+            "refresh"
         );
 
+        const hashedRefreshToken = await argon2.hash(refreshToken);
+
         const { password, ...userWithoutPassword } = user;
+
+        await Promise.all([
+            this.cache.set(userCacheKeyWithId(user.id), userWithoutPassword),
+            this.cache.set(userCacheKeyWithEmail(user.email), {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+            }),
+            this.cache.set(
+                `refresh:${user.id}`,
+                hashedRefreshToken,
+                env.REFRESH_TOKEN_EXPIRES
+            ),
+        ]);
 
         return {
             message: "Login successful",
@@ -187,6 +233,22 @@ export class AuthService {
     }
 
     async getCurrentUser(userId: string) {
+        const key = userCacheKeyWithId(userId);
+
+        const USER_NOT_FOUND = "__USER_NOT_FOUND__";
+
+        const cached = await this.cache.get<
+            typeof user | typeof USER_NOT_FOUND
+        >(key);
+
+        if (cached) {
+            if (cached === USER_NOT_FOUND) {
+                throw new NotFoundException("User not found");
+            }
+
+            return cached;
+        }
+
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -199,7 +261,13 @@ export class AuthService {
             },
         });
 
-        if (!user) throw new NotFoundException("User not found");
+        if (!user) {
+            // Cache negative result for a short time
+            await this.cache.set(key, USER_NOT_FOUND, 60);
+            throw new NotFoundException("User not found");
+        }
+
+        await this.cache.set(key, user);
 
         return user;
     }
@@ -217,14 +285,41 @@ export class AuthService {
             throw new UnauthorizedException("Invalid refresh token");
         }
 
-        const user = await this.prisma.user.findUnique({
-            where: {
-                id: userId,
-            },
-        });
+        let user = await this.cache.get<{
+            id: string;
+            email: string;
+            role: string;
+            name: string;
+            image: string | null;
+            createdAt: Date;
+        }>(userCacheKeyWithId(userId));
 
         if (!user) {
-            throw new UnauthorizedException("User not found");
+            user = await this.prisma.user.findUnique({
+                where: {
+                    id: userId,
+                },
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                    name: true,
+                    image: true,
+                    createdAt: true,
+                },
+            });
+
+            if (!user) {
+                throw new UnauthorizedException("User not found");
+            }
+
+            await this.cache.set(userCacheKeyWithId(user.id), user);
+
+            await this.cache.set(userCacheKeyWithEmail(user.email), {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+            });
         }
 
         const accessToken = this.generateToken(
@@ -243,11 +338,11 @@ export class AuthService {
             "refresh"
         );
 
-        const hashed = await argon2.hash(newRefreshToken);
+        const hashedRefreshToken = await argon2.hash(newRefreshToken);
 
         await this.cache.set(
             `refresh:${user.id}`,
-            hashed,
+            hashedRefreshToken,
             env.REFRESH_TOKEN_EXPIRES
         );
 

@@ -40,7 +40,12 @@ const updateSourceApi = async ({ id, data, image }: UpdateSourceVariables) => {
 
   const res = await privateApi.patch<ApiResponse<Source>>(
     `/source/${id}`,
-    formData
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
 
   return res.data;

@@ -25,8 +25,7 @@ export const envSchema = z.object({
             // Split comma-separated string and trim spaces
             return val.split(",").map((v) => v.trim());
         }),
-    // DATABASE_URL: z.url(),
-    // REDIS_URL: z.url(),
+
     APP_NAME: z.string().default(DEFAULT_APP_NAME),
     DATABASE_URL: z.url(),
     NODE_ENV: z.enum(EnvironmentEnum).default(EnvironmentEnum.DEVELOPMENT),

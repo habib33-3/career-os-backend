@@ -30,8 +30,8 @@ const useLogout = () => {
       clearUser();
     },
 
-    onSuccess: (data) => {
-      toast.success(data.message);
+    onSuccess: () => {
+      toast.success("Logout successful");
     },
 
     onError: (error) => {

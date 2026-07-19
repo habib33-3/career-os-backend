@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   description:
     "Career tracking system to manage jobs, companies, and interviews efficiently",
   keywords: ["career", "jobs", "interview", "tracker", "recruitment"],
-  authors: [{ name: "CareerOs Team" }],
+  authors: [{ name: "Habibur Rahman" }],
   metadataBase: new URL("https://career-os.app"),
   openGraph: {
     title: "CareerOs",
