@@ -1,3 +1,12 @@
 {
-  "js/ts.tsdk.path": "node_modules/typescript/lib"
+  "cSpell.words": [
+    "darraghor",
+    "Hashnode",
+    "lrem",
+    "sonarjs",
+    "Sonarjs",
+    "trivago"
+  ],
+  "js/ts.tsdk.path": "node_modules\\typescript\\lib",
+  "material-icon-theme.activeIconPack": "nest"
 }
