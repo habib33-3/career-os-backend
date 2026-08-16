@@ -13,6 +13,7 @@ import { PrismaModule } from "./infra/db/prisma/prisma.module";
 import { RedisModule } from "./infra/db/redis/redis.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { AccessTokenAuthGuard } from "./modules/auth/guard/access-token.guard";
+import { CompanyModule } from "./modules/company/company.module";
 import { SourceModule } from "./modules/source/source.module";
 
 @Module({
@@ -42,6 +43,7 @@ import { SourceModule } from "./modules/source/source.module";
         RedisModule,
         SourceModule,
         UploadFileModule,
+        CompanyModule,
     ],
     providers: [
         AppService,

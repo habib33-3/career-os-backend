@@ -27,3 +27,10 @@ export const sourceListWithUserId = (
 
 export const sourceItemWithId = (id: string, userId: string) =>
     withPrefix("source", id, userId);
+
+// company
+export const companyListWithUserId = (userId: string) =>
+    withPrefix("company", "list", userId);
+
+export const companyItemWithId = (id: string, userId: string) =>
+    withPrefix("company", id, userId);
