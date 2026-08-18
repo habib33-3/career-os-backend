@@ -1,5 +1,5 @@
 model Company {
-  id          String         @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
   url         String?
@@ -8,12 +8,12 @@ model Company {
   city        String?
   address     String?
 
-  userId      String
-  user        User           @relation(fields: [userId], references: [id])
-  contact     CompanyContact?
+  userId  String
+  user    User            @relation(fields: [userId], references: [id])
+  contact CompanyContact?
 
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, name])
 }
@@ -27,9 +27,9 @@ model CompanyContact {
   facebook   String?
   careerPage String?
 
-  companyId  String  @unique
-  company    Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String  @unique
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-    createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
