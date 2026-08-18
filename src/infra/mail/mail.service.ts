@@ -1,51 +1,44 @@
 import { Injectable, Logger } from "@nestjs/common";
 
-import { MailerService } from "@nestjs-modules/mailer";
+import { CreateEmailOptions, Resend } from "resend";
 
-import { SendTemplateOptions } from "./mail.type";
+import { env } from "@/common/env/env";
+
+import { SendEmailOptions } from "./mail.type";
 
 @Injectable()
 export class MailService {
     private readonly logger = new Logger(MailService.name);
+    private readonly resend: Resend;
 
-    constructor(private readonly mailer: MailerService) {}
+    constructor() {
+        this.resend = new Resend(env.RESEND_API_KEY);
+    }
 
-    async sendEmail(options: SendTemplateOptions): Promise<boolean> {
+    async sendEmail(options: SendEmailOptions): Promise<boolean> {
         try {
-            // Build mail options based on whether html or template is provided
-            const mailOptions: Parameters<typeof this.mailer.sendMail>[0] = {
-                subject: options.subject,
+            const mailOptions: CreateEmailOptions = {
+                from: env.CONTACT_EMAIL,
                 to: options.to,
+                subject: options.subject,
+                html: options.html,
             };
 
-            if (options.html) {
-                // Pre-rendered HTML provided
-                mailOptions.html = options.html;
-            } else if (options.template) {
-                // Template path provided - let mailer service handle rendering
-                mailOptions.template = options.template;
-                mailOptions.context = options.context ?? {};
-            } else {
-                throw new Error("Either 'html' or 'template' must be provided");
+            const { error } = await this.resend.emails.send(mailOptions);
+
+            if (error) {
+                throw new Error(error.message);
             }
 
-            await this.mailer.sendMail(mailOptions);
-
-            const identifier = options.html
-                ? "HTML email"
-                : `template "${options.template}"`;
-            this.logger.log(`Mail ${identifier} sent to ${options.to}`);
+            this.logger.log(`Mail sent to ${options.to}`);
 
             return true;
         } catch (error) {
             const message =
                 error instanceof Error ? error.message : "Unknown mail error";
-            const identifier = options.html
-                ? "HTML email"
-                : `template "${options.template}"`;
 
             this.logger.error(
-                `Failed sending ${identifier} to ${options.to}: ${message}`
+                `Failed sending mail to ${options.to}: ${message}`
             );
 
             return false;

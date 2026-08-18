@@ -27,6 +27,7 @@ export const envSchema = z.object({
         }),
 
     APP_NAME: z.string().default(DEFAULT_APP_NAME),
+    CONTACT_EMAIL: z.email(),
     DATABASE_URL: z.url(),
     NODE_ENV: z.enum(EnvironmentEnum).default(EnvironmentEnum.DEVELOPMENT),
     PEPPER_SECRET: z.string(),
@@ -52,13 +53,7 @@ export const envSchema = z.object({
 
     REFRESH_TOKEN_SECRET: z.string(),
 
-    SMTP_HOST: z.string().default("smtp.gmail.com"),
-    SMTP_PASSWORD: z.string(),
-    SMTP_PORT: z.coerce.number().default(587),
-    SMTP_SECURE: z
-        .preprocess((val) => val === "true" || val === true, z.boolean())
-        .default(false),
-    SMTP_USER: z.string(),
+    RESEND_API_KEY: z.string(),
     CLOUDINARY_CLOUD_NAME: z.string(),
     CLOUDINARY_API_KEY: z.string(),
     CLOUDINARY_API_SECRET: z.string(),
