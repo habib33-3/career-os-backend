@@ -1,0 +1,50 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build output
+dist
+coverage
+.nest
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Prisma generated/client artifacts
+prisma/generated
+
+# Logs
+*.log
+logs
+
+# Testing
+.nyc_output
+coverage
+
+# IDE / OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+docs
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Temporary files
+tmp
+temp
+*.tmp
+*.swp
