@@ -30,17 +30,14 @@ export class MailService {
                 throw new Error(error.message);
             }
 
-            this.logger.log(`Mail sent to ${options.to}`);
+            this.logger.log("Mail sent successfully");
 
             return true;
         } catch (error) {
             const message =
                 error instanceof Error ? error.message : "Unknown mail error";
 
-            this.logger.error(
-                `Failed sending mail to ${options.to}: ${message}`
-            );
-
+            this.logger.error(`Failed to send mail: ${message}`);
             return false;
         }
     }

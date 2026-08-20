@@ -1,5 +1,5 @@
 import {
-    BadGatewayException,
+    BadRequestException,
     Injectable,
     NotFoundException,
 } from "@nestjs/common";
@@ -119,33 +119,39 @@ export class CompanyService {
         file?: Express.Multer.File
     ) {
         if (!file) {
-            throw new BadGatewayException("File is required");
+            throw new BadRequestException("File is required");
         }
 
         const company = await this.getCompanyById(userId, id);
 
         const uploaded = await this.upload.uploadFile(file, "company");
 
-        if (company.logo) {
-            await this.upload.deleteFile(company.logo);
+        try {
+            const updated = await this.prisma.company.update({
+                where: { id },
+                data: {
+                    logo: uploaded.url,
+                },
+                include: {
+                    contact: true,
+                },
+            });
+
+            if (company.logo) {
+                await this.upload.deleteFile(company.logo);
+            }
+
+            await Promise.all([
+                this.cache.invalidate(companyListWithUserId(userId)),
+                this.cache.set(companyItemWithId(userId, id), updated),
+            ]);
+
+            return updated;
+        } catch (error) {
+            // DB update failed, so clean up the newly uploaded file
+            await this.upload.deleteFile(uploaded.url);
+            throw error;
         }
-
-        const updated = await this.prisma.company.update({
-            where: { id },
-            data: {
-                logo: uploaded.url,
-            },
-            include: {
-                contact: true,
-            },
-        });
-
-        await Promise.all([
-            this.cache.invalidate(companyListWithUserId(userId)),
-            this.cache.set(companyItemWithId(userId, id), updated),
-        ]);
-
-        return updated;
     }
 
     async updateCompany(userId: string, id: string, payload: UpdateCompanyDto) {
@@ -211,7 +217,11 @@ export class CompanyService {
     }
 
     async deleteCompany(userId: string, id: string) {
-        await this.getCompanyById(userId, id);
+        const company = await this.getCompanyById(userId, id);
+
+        if (company.logo) {
+            await this.upload.deleteFile(company.logo);
+        }
 
         await this.prisma.company.delete({
             where: { id, userId },
