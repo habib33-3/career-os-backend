@@ -1,7 +1,9 @@
 import { env } from "@/common/env/env";
 
-const withPrefix = (...parts: string[]) =>
-    `${env.APP_NAME}-cache:${parts.join(":")}`;
+const withPrefix = (...parts: (string | number | undefined | null)[]) =>
+    `${env.APP_NAME}-cache:${parts
+        .filter((part) => part !== undefined && part !== null && part !== "")
+        .join(":")}`;
 
 // User keys
 export const userCacheKeyWithEmail = (email: string) =>
@@ -27,3 +29,10 @@ export const sourceListWithUserId = (
 
 export const sourceItemWithId = (id: string, userId: string) =>
     withPrefix("source", id, userId);
+
+// company
+export const companyListWithUserId = (userId: string, search = "") =>
+    withPrefix("company", "list", userId, search);
+
+export const companyItemWithId = (id: string, userId: string) =>
+    withPrefix("company", id, userId);

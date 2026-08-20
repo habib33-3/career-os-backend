@@ -1,9 +1,7 @@
-export type SendMailOptions = {
+export type SendEmailOptions = {
     to: string | string[];
     subject: string;
-    html?: string;
-    text?: string;
-    from?: string;
+    html: string;
 };
 
 export type SendTemplateOptions = {

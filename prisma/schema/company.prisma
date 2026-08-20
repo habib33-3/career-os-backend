@@ -1,0 +1,35 @@
+model Company {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  url         String?
+  logo        String?
+  country     String
+  city        String?
+  address     String?
+
+  userId  String
+  user    User            @relation(fields: [userId], references: [id])
+  contact CompanyContact?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+}
+
+model CompanyContact {
+  id         String  @id @default(cuid())
+  email      String?
+  phone      String?
+  linkedin   String?
+  twitter    String?
+  facebook   String?
+  careerPage String?
+
+  companyId String  @unique
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
