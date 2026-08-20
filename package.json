@@ -22,7 +22,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "format": "prettier --write .",
     "db:studio": "pnpm dlx prisma studio",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "pnpm prisma generate"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.26",
