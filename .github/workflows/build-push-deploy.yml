@@ -3,11 +3,11 @@ name: CI/CD — Build, Push & Deploy
 on:
   push:
     branches:
-      - cicd
+      - main
 
   pull_request:
     branches:
-      - cicd
+      - main
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -55,7 +55,7 @@ jobs:
 
     if: >
       github.event_name == 'push' &&
-      github.ref == 'refs/heads/cicd'
+      github.ref == 'refs/heads/main'
 
     runs-on: ubuntu-latest
 
