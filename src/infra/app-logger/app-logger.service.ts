@@ -10,10 +10,22 @@ import {
     Logger as WinstonLogger,
 } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
+import Transport from "winston-transport";
 
 import { logConfig } from "./app-logger.config";
 
 const { combine, errors, printf, timestamp } = format;
+
+/* -------------------------------------------------------------------------- */
+/*                              ENVIRONMENT                                   */
+/* -------------------------------------------------------------------------- */
+
+// eslint-disable-next-line n/prefer-global/process
+const NODE_ENV = process.env.NODE_ENV ?? "development";
+
+const IS_PRODUCTION = NODE_ENV === "production";
+const IS_TEST = NODE_ENV === "test";
+const IS_DEVELOPMENT = !IS_PRODUCTION && !IS_TEST;
 
 /* -------------------------------------------------------------------------- */
 /*                                COLOR SYSTEM                                */
@@ -30,7 +42,6 @@ const LOG_COLORS = {
         warn: chalk.yellowBright.bold,
     },
     message: chalk.white,
-
     time: chalk.gray,
 };
 
@@ -48,7 +59,6 @@ const LEVEL_ICONS: Record<string, string> = {
 
 const consoleFormat = printf(
     ({ context, correlationId, level, message, stack, timestamp }) => {
-        // Format timestamp with date-fns
         const time = LOG_COLORS.time(
             formatDate(new Date(timestamp as number), "yyyy-MM-dd HH:mm:ss.SSS")
         );
@@ -81,7 +91,7 @@ const consoleFormat = printf(
 );
 
 /* -------------------------------------------------------------------------- */
-/*                              FILE LOG FORMAT                                */
+/*                              FILE LOG FORMAT                               */
 /* -------------------------------------------------------------------------- */
 
 const fileFormat = printf(
@@ -97,14 +107,47 @@ const fileFormat = printf(
 );
 
 /* -------------------------------------------------------------------------- */
-/*                              LOGGER SERVICE                                 */
+/*                          LEVEL PRIORITY (for setLogLevels)                 */
+/* -------------------------------------------------------------------------- */
+
+// Ordered from highest to lowest severity, matching Nest's LogLevel union.
+// "log" maps to Winston's "info" level.
+const NEST_TO_WINSTON_LEVEL: Record<string, string> = {
+    debug: "debug",
+    error: "error",
+    fatal: "error",
+    log: "info",
+    verbose: "verbose",
+    warn: "warn",
+};
+
+const LEVEL_PRIORITY: LogLevel[] = [
+    "fatal",
+    "error",
+    "warn",
+    "log",
+    "verbose",
+    "debug",
+];
+
+/* -------------------------------------------------------------------------- */
+/*                              LOGGER SERVICE                                */
 /* -------------------------------------------------------------------------- */
 
 /**
- * True drop-in replacement for NestJS Logger
- * - Chalk-powered console logs (dev-friendly)
- * - JSON rotated files (prod-friendly)
- * - Correlation-id aware
+ * Environment-aware drop-in replacement for NestJS Logger.
+ *
+ * Development:
+ * - Colored console logs
+ * - No log files
+ *
+ * Production:
+ * - Console logs
+ * - JSON rotated log files
+ *
+ * Test:
+ * - Console logs
+ * - No log files
  */
 export class AppLoggerService implements LoggerService {
     private readonly logger: WinstonLogger;
@@ -113,27 +156,35 @@ export class AppLoggerService implements LoggerService {
     constructor(context?: string) {
         this.context = context ?? "AppLogger";
 
-        this.logger = createLogger({
-            exitOnError: false,
-            format: combine(timestamp(), errors({ stack: true })),
-            level: logConfig.level,
-            transports: [
-                new transports.Console({
-                    format: combine(consoleFormat),
-                }),
+        const loggerTransports: Transport[] = [
+            new transports.Console({
+                format: combine(consoleFormat),
+            }),
+        ];
+
+        // File logging is only enabled in production.
+        if (IS_PRODUCTION) {
+            loggerTransports.push(
                 new DailyRotateFile({
                     datePattern: logConfig.datePattern,
                     filename: "logs/application-%DATE%.log",
-                    format: combine(
-                        timestamp(),
-                        errors({ stack: true }),
-                        fileFormat
-                    ),
+                    format: combine(fileFormat),
                     maxFiles: logConfig.maxFiles,
                     zippedArchive: logConfig.zippedArchive,
-                }),
-            ],
+                })
+            );
+        }
+
+        this.logger = createLogger({
+            exitOnError: false,
+            format: combine(timestamp(), errors({ stack: true })),
+            level: IS_TEST ? "error" : logConfig.level,
+            transports: loggerTransports,
         });
+
+        if (IS_DEVELOPMENT) {
+            this.logger.debug(`Logger initialized in ${NODE_ENV} environment`);
+        }
     }
 
     private getContext(context?: string) {
@@ -181,7 +232,20 @@ export class AppLoggerService implements LoggerService {
         });
     }
 
+    /**
+     * Nest calls this with the full set of enabled levels, e.g.
+     * ['error', 'warn', 'log']. Winston only accepts a single severity
+     * threshold, so we pick the lowest-priority (most verbose) level
+     * present and use that as the Winston level.
+     */
     setLogLevels(levels: LogLevel[]) {
-        this.logger.level = levels[0];
+        const lowest = LEVEL_PRIORITY.find((level) => levels.includes(level));
+
+        if (!lowest) {
+            return;
+        }
+
+        // eslint-disable-next-line security/detect-object-injection
+        this.logger.level = NEST_TO_WINSTON_LEVEL[lowest] ?? "info";
     }
 }
