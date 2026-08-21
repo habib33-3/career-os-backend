@@ -76,7 +76,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/order-flow
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
           tags: |
             type=raw,value=latest
             type=sha,format=short
@@ -92,6 +92,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-    #   - name: Trigger Render deployment
-    #     if: success()
-    #     run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+      - name: Trigger Render deployment
+        if: success()
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
