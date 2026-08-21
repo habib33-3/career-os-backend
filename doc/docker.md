@@ -5,7 +5,7 @@
 Copy the demo environment file:
 
 ```bash
-cp .env.demo .env
+cp .env.demo .env.docker
 ```
 
 Configure `.env.docker` with the Docker service names:

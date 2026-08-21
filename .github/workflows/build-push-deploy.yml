@@ -94,4 +94,4 @@ jobs:
 
       - name: Trigger Render deployment
         if: success()
-        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+        run: curl --fail --silent --show-error -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
