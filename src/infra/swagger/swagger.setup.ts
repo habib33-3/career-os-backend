@@ -6,20 +6,18 @@ import { env } from "@/common/env/env";
 import { ACCESS_TOKEN } from "@/modules/auth/constants/auth.constants";
 
 export const setupSwagger = (app: INestApplication) => {
-    if (env.NODE_ENV === "production") return;
-
     const config = new DocumentBuilder()
         .setTitle(`${env.APP_NAME} API`)
         .setDescription("API Documentation")
         .setVersion("1.0")
         .addBearerAuth(
             {
-                bearerFormat: "JWT", // optional but recommended
+                bearerFormat: "JWT",
                 description: "Enter Access token",
                 scheme: "bearer",
                 type: "http",
             },
-            ACCESS_TOKEN // 👈 this name is important
+            ACCESS_TOKEN //
         )
         .addSecurityRequirements(ACCESS_TOKEN)
         .build();
