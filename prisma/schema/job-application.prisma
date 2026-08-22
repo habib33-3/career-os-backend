@@ -1,0 +1,109 @@
+model JobApplication {
+    id String @id @default(cuid())
+
+    jobTitle            String
+    jobDescription      String?
+    status              JobApplicationStatus @default(NOT_APPLIED)
+    appliedVia          AppliedVia?
+    note                String?
+    jobUrl              String?
+    location            String?
+    workArrangement     WorkArrangement?
+    applicationDeadline DateTime?
+
+    employmentType EmploymentType @default(FULL_TIME)
+
+    offeredSalary  Decimal?
+    expectedSalary Decimal?
+    salaryCurrency String?
+
+    sourceId String
+    source   Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+    companyId String
+    company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt            DateTime              @default(now())
+    updatedAt            DateTime              @updatedAt
+    jobApplicationEvents JobApplicationEvent[]
+}
+
+model JobApplicationEvent {
+    id String @id @default(cuid())
+
+    type JobApplicationEventType
+
+    fromStatus JobApplicationStatus?
+    toStatus   JobApplicationStatus?
+
+    occurredAt DateTime @default(now())
+    note       String?
+
+    jobApplicationId String
+    jobApplication   JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+
+    @@index([jobApplicationId, occurredAt])
+}
+
+enum JobApplicationStatus {
+    NOT_APPLIED
+    APPLIED
+    TASK_RECEIVED
+    TASK_SUBMITTED
+    INTERVIEW
+    OFFER
+    REJECTED
+    WITHDRAWN
+    STALLED
+}
+
+enum JobApplicationEventType {
+    APPLICATION_SUBMITTED
+    TASK_RECEIVED
+    TASK_SUBMITTED
+    INTERVIEW_SCHEDULED
+    INTERVIEW_COMPLETED
+    OFFER_RECEIVED
+    REJECTED
+    WITHDRAWN
+    STATUS_CHANGED
+    NOTE_ADDED
+}
+
+enum AppliedVia {
+    COMPANY_WEBSITE
+    LINKEDIN
+    RECRUITER
+    REFERRAL
+    JOB_BOARD
+    GOOGLE_FORM
+    EMAIL
+    WHATSAPP
+    OTHER
+}
+
+enum SalaryPeriod {
+    HOURLY
+    MONTHLY
+    YEARLY
+}
+
+enum WorkArrangement {
+    REMOTE
+    HYBRID
+    ONSITE
+}
+
+enum EmploymentType {
+    FULL_TIME
+    PART_TIME
+    CONTRACT
+    INTERNSHIP
+    FREELANCE
+    TEMPORARY
+}

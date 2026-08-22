@@ -6,10 +6,11 @@ model User {
     password String
     image    String
 
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    sources   Source[]
-    companies Company[]
+    createdAt       DateTime         @default(now())
+    updatedAt       DateTime         @updatedAt
+    sources         Source[]
+    companies       Company[]
+    jobApplications JobApplication[]
 }
 
 enum UserRole {
