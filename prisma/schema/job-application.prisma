@@ -19,6 +19,7 @@ model JobApplication {
     salaryPeriod   SalaryPeriod @default(MONTHLY)
     workStartTime  String?
     workEndTime    String?
+    appliedAt      DateTime?
 
     sourceId String
     source   Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)

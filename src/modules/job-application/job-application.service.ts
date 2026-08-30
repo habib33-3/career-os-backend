@@ -69,8 +69,7 @@ export class JobApplicationService {
                     employmentType: payload.employmentType,
                     workArrangement: payload.workArrangement,
 
-                    appliedVia: payload.appliedVia,
-                    status: isApplied ? "APPLIED" : "NOT_APPLIED",
+                    status: "NOT_APPLIED",
 
                     expectedSalary: this.convertToDecimal(
                         payload.expectedSalary
@@ -83,10 +82,21 @@ export class JobApplicationService {
             });
 
             if (isApplied) {
+                const appliedAt = new Date();
+
+                await tx.jobApplication.update({
+                    where: { id: jobApplication.id },
+                    data: {
+                        appliedVia: payload.appliedVia,
+                        appliedAt,
+                        status: "APPLIED",
+                    },
+                });
+
                 await tx.jobApplicationEvent.create({
                     data: {
                         jobApplicationId: jobApplication.id,
-                        occurredAt: new Date(),
+                        occurredAt: appliedAt,
                         type: "APPLICATION_SUBMITTED",
                         fromStatus: "NOT_APPLIED",
                         toStatus: "APPLIED",

@@ -26,12 +26,15 @@ import {
 
 import { AddJobApplicationDto } from "./dto/add-job-application.dto";
 import { UpdateJobApplicationDto } from "./dto/update-job-application.dto";
+import { UpdateJobApplicationToAppliedDto } from "./dto/update-to-apply.dto";
 import { JobApplicationService } from "./job-application.service";
+import { UpdateJobApplicationStatusService } from "./UpdateJobApplicationStatus.service";
 
 @Controller("job-application")
 export class JobApplicationController {
     constructor(
-        private readonly jobApplicationService: JobApplicationService
+        private readonly jobApplicationService: JobApplicationService,
+        private readonly updateJobApplicationStatus: UpdateJobApplicationStatusService
     ) {}
 
     @HttpCode(HttpStatus.CREATED)
@@ -164,6 +167,32 @@ export class JobApplicationController {
     ) {
         return this.jobApplicationService.getJobApplicationById(id, userId);
     }
+
+    @ApiOperation({
+        summary: "Mark job application as applied",
+        description:
+            "Marks a job application as applied and records the application submission event.",
+    })
+    @ApiParam({
+        name: "id",
+        description: "Job application ID",
+        required: true,
+        type: String,
+        example: "cm123abc456",
+    })
+    @Patch(":id/status/applied")
+    async updateStatusToApplied(
+        @CurrentUser("sub") userId: string,
+        @Param("id") id: string,
+        @Body() payload: UpdateJobApplicationToAppliedDto
+    ) {
+        return this.updateJobApplicationStatus.updateStatusToApplied(
+            id,
+            userId,
+            payload
+        );
+    }
+
     @HttpCode(HttpStatus.OK)
     @Patch(":id")
     @ApiOperation({
