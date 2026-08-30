@@ -16,6 +16,9 @@ model JobApplication {
     offeredSalary  Decimal?
     expectedSalary Decimal?
     salaryCurrency String?
+    salaryPeriod   SalaryPeriod @default(MONTHLY)
+    workStartTime  String?
+    workEndTime    String?
 
     sourceId String
     source   Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
@@ -89,6 +92,8 @@ enum AppliedVia {
 
 enum SalaryPeriod {
     HOURLY
+    DAILY
+    WEEKLY
     MONTHLY
     YEARLY
 }

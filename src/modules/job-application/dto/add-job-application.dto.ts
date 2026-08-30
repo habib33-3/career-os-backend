@@ -10,6 +10,7 @@ import {
     IsString,
     IsUrl,
     Length,
+    Matches,
     MaxLength,
     MinLength,
     ValidateIf,
@@ -18,6 +19,7 @@ import {
 import {
     AppliedVia,
     EmploymentType,
+    SalaryPeriod,
     WorkArrangement,
 } from "@/generated/prisma/enums";
 
@@ -164,4 +166,37 @@ export class AddJobApplicationDto {
     @IsString()
     @MaxLength(5000)
     note?: string;
+
+    @ApiPropertyOptional({
+        enum: SalaryPeriod,
+        example: SalaryPeriod.MONTHLY,
+        description: "Salary payment period",
+    })
+    @IsOptional()
+    @IsEnum(SalaryPeriod)
+    salaryPeriod?: SalaryPeriod;
+
+    @ApiPropertyOptional({
+        type: String,
+        example: "09:00",
+        description: "Work start time in 24-hour HH:mm format",
+    })
+    @IsOptional()
+    @IsString()
+    @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+        message: "workStartTime must be in HH:mm format",
+    })
+    workStartTime?: string;
+
+    @ApiPropertyOptional({
+        type: String,
+        example: "17:30",
+        description: "Work end time in 24-hour HH:mm format",
+    })
+    @IsOptional()
+    @IsString()
+    @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
+        message: "workEndTime must be in HH:mm format",
+    })
+    workEndTime?: string;
 }
