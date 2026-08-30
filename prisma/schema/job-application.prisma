@@ -33,25 +33,7 @@ model JobApplication {
     createdAt            DateTime              @default(now())
     updatedAt            DateTime              @updatedAt
     jobApplicationEvents JobApplicationEvent[]
-}
-
-model JobApplicationEvent {
-    id String @id @default(cuid())
-
-    type JobApplicationEventType
-
-    fromStatus JobApplicationStatus?
-    toStatus   JobApplicationStatus?
-
-    occurredAt DateTime @default(now())
-    note       String?
-
-    jobApplicationId String
-    jobApplication   JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
-
-    createdAt DateTime @default(now())
-
-    @@index([jobApplicationId, occurredAt])
+    jobApplicationTasks  JobApplicationTask[]
 }
 
 enum JobApplicationStatus {
@@ -64,19 +46,6 @@ enum JobApplicationStatus {
     REJECTED
     WITHDRAWN
     STALLED
-}
-
-enum JobApplicationEventType {
-    APPLICATION_SUBMITTED
-    TASK_RECEIVED
-    TASK_SUBMITTED
-    INTERVIEW_SCHEDULED
-    INTERVIEW_COMPLETED
-    OFFER_RECEIVED
-    REJECTED
-    WITHDRAWN
-    STATUS_CHANGED
-    NOTE_ADDED
 }
 
 enum AppliedVia {
@@ -112,4 +81,73 @@ enum EmploymentType {
     INTERNSHIP
     FREELANCE
     TEMPORARY
+}
+
+model JobApplicationEvent {
+    id String @id @default(cuid())
+
+    type JobApplicationEventType
+
+    fromStatus JobApplicationStatus?
+    toStatus   JobApplicationStatus?
+
+    occurredAt DateTime @default(now())
+    note       String?
+
+    jobApplicationId String
+    jobApplication   JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+
+    @@index([jobApplicationId, occurredAt])
+}
+
+enum JobApplicationEventType {
+    APPLICATION_SUBMITTED
+    TASK_RECEIVED
+    TASK_SUBMITTED
+    INTERVIEW_SCHEDULED
+    INTERVIEW_COMPLETED
+    OFFER_RECEIVED
+    REJECTED
+    WITHDRAWN
+    STATUS_CHANGED
+    NOTE_ADDED
+}
+
+model JobApplicationTask {
+    id          String     @id @default(cuid())
+    title       String
+    description String?
+    status      TaskStatus @default(PENDING)
+    note        String?
+    requirements String
+
+    receivedAt  DateTime?
+    deadline    DateTime?
+    submittedAt DateTime?
+
+    submissionType      SubmissionType?
+    submissionReference String?
+
+    jobApplicationId String
+    jobApplication   JobApplication @relation(fields: [jobApplicationId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([jobApplicationId])
+}
+
+enum TaskStatus {
+    PENDING
+    IN_PROGRESS
+    SUBMITTED
+    COMPLETED
+    SKIPPED
+}
+
+enum SubmissionType {
+    URL
+    EMAIL
 }
