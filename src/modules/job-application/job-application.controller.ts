@@ -2,16 +2,18 @@ import {
     Body,
     Controller,
     DefaultValuePipe,
+    Delete,
     Get,
     HttpCode,
     HttpStatus,
     Param,
     ParseEnumPipe,
     ParseIntPipe,
+    Patch,
     Post,
     Query,
 } from "@nestjs/common";
-import { ApiOperation, ApiQuery } from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiQuery } from "@nestjs/swagger";
 
 import { CurrentUser } from "@/common/decorators/auth/current-user.decorator";
 
@@ -23,6 +25,7 @@ import {
 } from "@/generated/prisma/enums";
 
 import { AddJobApplicationDto } from "./dto/add-job-application.dto";
+import { UpdateJobApplicationDto } from "./dto/update-job-application.dto";
 import { JobApplicationService } from "./job-application.service";
 
 @Controller("job-application")
@@ -160,5 +163,49 @@ export class JobApplicationController {
         @Param("id") id: string
     ) {
         return this.jobApplicationService.getJobApplicationById(id, userId);
+    }
+    @HttpCode(HttpStatus.OK)
+    @Patch(":id")
+    @ApiOperation({
+        summary: "Update job application",
+        description: "Update an existing job application",
+    })
+    @ApiParam({
+        name: "id",
+        description: "Job application ID",
+        required: true,
+        type: String,
+        example: "cm123abc456",
+    })
+    async updateJobApplication(
+        @CurrentUser("sub") userId: string,
+        @Param("id") id: string,
+        @Body() payload: UpdateJobApplicationDto
+    ) {
+        return this.jobApplicationService.updateJobApplication(
+            id,
+            userId,
+            payload
+        );
+    }
+
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Delete(":id")
+    @ApiOperation({
+        summary: "Delete job application",
+        description: "Delete an existing job application",
+    })
+    @ApiParam({
+        name: "id",
+        description: "Job application ID",
+        required: true,
+        type: String,
+        example: "cm123abc456",
+    })
+    async deleteJobApplication(
+        @CurrentUser("sub") userId: string,
+        @Param("id") id: string
+    ) {
+        return this.jobApplicationService.deleteJobApplication(id, userId);
     }
 }

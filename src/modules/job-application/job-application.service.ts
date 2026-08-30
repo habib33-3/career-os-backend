@@ -19,6 +19,7 @@ import {
 import { CompanyService } from "../company/company.service";
 import { SourceService } from "../source/source.service";
 import { AddJobApplicationDto } from "./dto/add-job-application.dto";
+import { UpdateJobApplicationDto } from "./dto/update-job-application.dto";
 
 @Injectable()
 export class JobApplicationService {
@@ -213,5 +214,42 @@ export class JobApplicationService {
             throw new NotFoundException("Job Application not found");
 
         return application;
+    }
+
+    async updateJobApplication(
+        id: string,
+        userId: string,
+        payload: UpdateJobApplicationDto
+    ) {
+        await this.getJobApplicationById(id, userId);
+
+        const data = Object.fromEntries(
+            Object.entries(payload).filter(([, value]) => value !== undefined)
+        ) as Prisma.JobApplicationUpdateInput;
+
+        if (payload.expectedSalary !== undefined) {
+            data.expectedSalary = this.convertToDecimal(payload.expectedSalary);
+        }
+
+        if (payload.offeredSalary !== undefined) {
+            data.offeredSalary = this.convertToDecimal(payload.offeredSalary);
+        }
+
+        const updatedApplication = await this.prisma.jobApplication.update({
+            where: { id },
+            data,
+        });
+
+        return updatedApplication;
+    }
+
+    async deleteJobApplication(id: string, userId: string) {
+        await this.getJobApplicationById(id, userId);
+
+        await this.prisma.jobApplication.delete({ where: { id } });
+
+        return {
+            message: "Job Application deleted successfully",
+        };
     }
 }
