@@ -27,6 +27,7 @@ import {
 import { AddJobApplicationDto } from "./dto/add-job-application.dto";
 import { UpdateJobApplicationDto } from "./dto/update-job-application.dto";
 import { UpdateJobApplicationToAppliedDto } from "./dto/update-to-apply.dto";
+import { UpdateJobApplicationToTaskReceivedDto } from "./dto/update-to-task-received.dto";
 import { JobApplicationService } from "./job-application.service";
 import { UpdateJobApplicationStatusService } from "./UpdateJobApplicationStatus.service";
 
@@ -187,6 +188,31 @@ export class JobApplicationController {
         @Body() payload: UpdateJobApplicationToAppliedDto
     ) {
         return this.updateJobApplicationStatus.updateStatusToApplied(
+            id,
+            userId,
+            payload
+        );
+    }
+
+    @ApiOperation({
+        summary: "Mark job application as task received",
+        description:
+            "Marks a job application as task received and records the task received event.",
+    })
+    @ApiParam({
+        name: "id",
+        description: "Job application ID",
+        required: true,
+        type: String,
+        example: "cm123abc456",
+    })
+    @Patch(":id/status/task-received")
+    async updateStatusToTaskReceived(
+        @CurrentUser("sub") userId: string,
+        @Param("id") id: string,
+        @Body() payload: UpdateJobApplicationToTaskReceivedDto
+    ) {
+        return this.updateJobApplicationStatus.updateStatusToTaskReceived(
             id,
             userId,
             payload
